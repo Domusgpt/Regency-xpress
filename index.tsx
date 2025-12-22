@@ -8,16 +8,43 @@ gsap.registerPlugin(ScrollTrigger);
 
 // ============================================================================
 // 🚨 PASTE YOUR LOGO LINK HERE 🚨
-// 1. Upload logo.png to GitHub.
-// 2. Click "Raw" to get the direct link.
-// 3. Paste it inside the quotes below.
+// I've converted your GitHub blob link to a Raw link so it renders as an image.
 // ============================================================================
-const LOGO_URL: string = ""; 
-// Example: "https://raw.githubusercontent.com/yourname/your-repo/main/logo.png"
+const LOGO_URL: string = "https://raw.githubusercontent.com/Domusgpt/Regency-xpress/main/logo.png";
 
+
+// --- Component: The Geometric Symbol (Backup Art) ---
+// Extracted so we can use it as a design element elsewhere
+const RegencySymbol = ({ className = "" }) => (
+  <div className={`flex items-center justify-center ${className}`}>
+    <div className="relative flex items-center justify-center w-10 h-10">
+        <div className="absolute w-6 h-6 border-2 border-regencyBlue rounded-tl-xl rounded-br-xl top-0 left-0"></div>
+        <div className="absolute w-6 h-6 border-2 border-regencyGold rounded-tr-xl rounded-bl-xl bottom-0 right-0"></div>
+    </div>
+  </div>
+);
+
+// --- Component: The Full Backup Logo (Text + Symbol) ---
+// This is the one you liked. It shows if the image fails, or where explicitly used.
+const RegencyBackupLogo = ({ className = "" }) => (
+    <div className={`flex flex-col items-center justify-center ${className}`}>
+       <div className="flex flex-col items-center">
+          {/* Symbol Representation */}
+          <div className="mb-2 opacity-90 scale-125">
+             <RegencySymbol />
+          </div>
+          {/* Wordmark */}
+          <div className="flex items-baseline gap-2 mt-2">
+             <span className="font-sans font-bold text-2xl md:text-3xl text-regencyGold tracking-tight">Regency</span>
+             <span className="font-sans font-bold text-2xl md:text-3xl text-regencyGold tracking-tight">Xpress</span>
+          </div>
+          <span className="text-[10px] md:text-xs font-bold text-regencyBlue tracking-[0.4em] uppercase mt-1">Services</span>
+       </div>
+    </div>
+);
 
 // --- Brand Logo Component ---
-// logic: Tries to load LOGO_URL. If empty or fails, renders professional HTML text.
+// Logic: Tries to load LOGO_URL. If empty or fails, renders the RegencyBackupLogo.
 const RegencyLogo = ({ className = "" }) => {
   const [imageError, setImageError] = useState(false);
   const hasUrl = LOGO_URL && LOGO_URL.length > 0;
@@ -35,27 +62,8 @@ const RegencyLogo = ({ className = "" }) => {
     );
   }
 
-  // Fallback: Professional CSS Typography Version
-  // This shows if no URL is provided or the link breaks.
-  return (
-    <div className={`flex flex-col items-center justify-center ${className}`}>
-       <div className="flex flex-col items-center">
-          {/* Symbol Representation */}
-          <div className="mb-2 opacity-90">
-             <div className="flex items-center gap-1">
-                <div className="w-8 h-8 border-2 border-regencyBlue rounded-tl-xl rounded-br-xl"></div>
-                <div className="w-8 h-8 border-2 border-regencyGold rounded-tr-xl rounded-bl-xl -ml-4 mt-4"></div>
-             </div>
-          </div>
-          {/* Wordmark */}
-          <div className="flex items-baseline gap-2">
-             <span className="font-sans font-bold text-2xl md:text-3xl text-regencyGold tracking-tight">Regency</span>
-             <span className="font-sans font-bold text-2xl md:text-3xl text-regencyGold tracking-tight">Xpress</span>
-          </div>
-          <span className="text-[10px] md:text-xs font-bold text-regencyBlue tracking-[0.4em] uppercase mt-1">Services</span>
-       </div>
-    </div>
-  );
+  // Fallback: The design you liked
+  return <RegencyBackupLogo className={className} />;
 };
 
 // SVG Icons (Darker strokes for light theme)
@@ -189,11 +197,11 @@ const App = () => {
       {/* HERO SECTION - BRIGHT & CLEAN */}
       <section id="hero-section" className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center pt-20">
         
-        {/* Background - High Key Professional Logistics */}
+        {/* Background - Medical/Lab Logistics Feel */}
         <div id="hero-bg-img" className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=3870&auto=format&fit=crop" 
-            alt="Logistics Planning" 
+            src="https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=3774&auto=format&fit=crop" 
+            alt="Medical Logistics" 
             className="w-full h-full object-cover opacity-10"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white/50"></div>
@@ -207,7 +215,7 @@ const App = () => {
              <RegencyLogo />
           </div>
           <p className="mt-8 font-mono text-regencyBlue text-xs md:text-sm tracking-[0.4em] uppercase text-center">
-             Intelligent Logistics Solutions
+             Intelligent Medical Logistics
           </p>
         </div>
 
@@ -225,9 +233,9 @@ const App = () => {
         <div className="flex gap-12 animate-[marquee_30s_linear_infinite] w-max">
            {[...Array(6)].map((_, i) => (
              <span key={i} className="text-gray-400 font-display font-bold text-xl tracking-wider flex items-center gap-12">
-               DEDICATED FLEET <span className="text-regencyGold text-sm">●</span> 
-               EXPEDITED GROUND <span className="text-regencyGold text-sm">●</span> 
-               NATIONWIDE <span className="text-regencyGold text-sm">●</span>
+               CLINICAL TRIALS <span className="text-regencyGold text-sm">●</span> 
+               STAT DELIVERY <span className="text-regencyGold text-sm">●</span> 
+               WHITE GLOVE <span className="text-regencyGold text-sm">●</span>
              </span>
            ))}
         </div>
@@ -242,7 +250,7 @@ const App = () => {
                 <div className="h-1 w-20 bg-regencyGold"></div>
             </div>
             <p className="text-gray-500 max-w-sm text-sm leading-relaxed text-right md:text-left">
-                We replace traditional complexity with direct solutions. No hubs, no transfers, just A to B.
+                Precision logistics for the healthcare industry. We understand that behind every shipment is a patient waiting.
             </p>
           </div>
 
@@ -250,7 +258,7 @@ const App = () => {
             
             {/* Service 1: Sprinter */}
             <div className="service-card group relative h-[500px] bg-regencyOffWhite hover:shadow-2xl hover:shadow-regencyBlue/10 transition-all duration-500 rounded-sm overflow-hidden">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=3871&auto=format&fit=crop')] bg-cover bg-center opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579165466741-7f35a4755657?q=80&w=3879&auto=format&fit=crop')] bg-cover bg-center opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
               <div className="absolute inset-0 bg-white group-hover:bg-regencyDarkBlue/90 transition-colors duration-500"></div>
               
               <div className="absolute inset-0 p-10 flex flex-col justify-between">
@@ -259,13 +267,13 @@ const App = () => {
                 </div>
                 
                 <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                  <h3 className="text-3xl font-display font-bold text-regencyDarkBlue group-hover:text-white mb-4">Sprinter<br/>Fleet</h3>
+                  <h3 className="text-3xl font-display font-bold text-regencyDarkBlue group-hover:text-white mb-4">Dedicated<br/>Transport</h3>
                   <div className="h-[1px] w-full bg-gray-200 group-hover:bg-white/20 mb-4"></div>
                   <p className="text-sm text-gray-500 group-hover:text-gray-300 leading-relaxed mb-6">
-                    High-roof extended vans designed for palletized freight. The speed of a courier with the capacity of a truck.
+                    Temperature-controlled units designed for pharmaceuticals, bio-samples, and clinical trial logistics.
                   </p>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-regencyGold opacity-0 group-hover:opacity-100 transition-opacity">
-                    View Specs &rarr;
+                    View Fleet Specs &rarr;
                   </span>
                 </div>
               </div>
@@ -273,7 +281,7 @@ const App = () => {
 
             {/* Service 2: Expedited */}
             <div className="service-card group relative h-[500px] bg-regencyOffWhite hover:shadow-2xl hover:shadow-regencyBlue/10 transition-all duration-500 rounded-sm overflow-hidden md:-translate-y-12">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1621929747188-0b4dc28498d2?q=80&w=3272&auto=format&fit=crop')] bg-cover bg-center opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516574187841-693083f652eb?q=80&w=3870&auto=format&fit=crop')] bg-cover bg-center opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
               <div className="absolute inset-0 bg-white group-hover:bg-regencyDarkBlue/90 transition-colors duration-500"></div>
               
               <div className="absolute inset-0 p-10 flex flex-col justify-between">
@@ -282,10 +290,10 @@ const App = () => {
                   </div>
                   
                   <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3 className="text-3xl font-display font-bold text-regencyDarkBlue group-hover:text-white mb-4">Time<br/>Critical</h3>
+                    <h3 className="text-3xl font-display font-bold text-regencyDarkBlue group-hover:text-white mb-4">STAT<br/>Medical</h3>
                     <div className="h-[1px] w-full bg-gray-200 group-hover:bg-white/20 mb-4"></div>
                     <p className="text-sm text-gray-500 group-hover:text-gray-300 leading-relaxed mb-6">
-                      When "tomorrow" isn't fast enough. Dedicated teams driving non-stop to ensure morning delivery.
+                       Immediate response teams for organ transport, surgical kits, and life-saving emergency deliveries.
                     </p>
                     <span className="text-[10px] font-bold uppercase tracking-widest text-regencyGold opacity-0 group-hover:opacity-100 transition-opacity">
                       Learn More &rarr;
@@ -296,7 +304,7 @@ const App = () => {
 
             {/* Service 3: Dedicated */}
             <div className="service-card group relative h-[500px] bg-regencyOffWhite hover:shadow-2xl hover:shadow-regencyBlue/10 transition-all duration-500 rounded-sm overflow-hidden">
-               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=3870&auto=format&fit=crop')] bg-cover bg-center opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516549655169-df83a0a4a2b9?q=80&w=3870&auto=format&fit=crop')] bg-cover bg-center opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
               <div className="absolute inset-0 bg-white group-hover:bg-regencyDarkBlue/90 transition-colors duration-500"></div>
               
               <div className="absolute inset-0 p-10 flex flex-col justify-between">
@@ -305,10 +313,10 @@ const App = () => {
                   </div>
                   
                   <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3 className="text-3xl font-display font-bold text-regencyDarkBlue group-hover:text-white mb-4">Final<br/>Mile</h3>
+                    <h3 className="text-3xl font-display font-bold text-regencyDarkBlue group-hover:text-white mb-4">Device<br/>Installation</h3>
                     <div className="h-[1px] w-full bg-gray-200 group-hover:bg-white/20 mb-4"></div>
                     <p className="text-sm text-gray-500 group-hover:text-gray-300 leading-relaxed mb-6">
-                      White-glove delivery services for sensitive equipment, medical supplies, and high-value retail.
+                      White-glove delivery and positioning for MRI machines, incubators, and sensitive diagnostic robotics.
                     </p>
                     <span className="text-[10px] font-bold uppercase tracking-widest text-regencyGold opacity-0 group-hover:opacity-100 transition-opacity">
                       Coverage Map &rarr;
@@ -329,7 +337,7 @@ const App = () => {
         <div id="stats-grid" className="max-w-6xl mx-auto px-6 relative z-10 grid grid-cols-2 md:grid-cols-4 gap-12">
             <div className="flex flex-col border-l border-white/20 pl-6">
               <span className="text-5xl font-display font-bold text-white mb-2">500<span className="text-regencyGold">+</span></span>
-              <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">Active Units</span>
+              <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">Medical Units</span>
             </div>
             <div className="flex flex-col border-l border-white/20 pl-6">
               <span className="text-5xl font-display font-bold text-white mb-2">48</span>
@@ -351,7 +359,11 @@ const App = () => {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-20 items-center">
            <div className="w-full md:w-1/2 space-y-8 z-10">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-1 bg-regencyBlue"></div>
+                {/* 
+                   USED THE BACKUP SYMBOL HERE AS REQUESTED 
+                   It replaces the blue line with a branded graphic element.
+                */}
+                <RegencySymbol />
                 <span className="text-regencyBlue font-bold tracking-widest uppercase text-sm">The Regency Standard</span>
               </div>
               
@@ -360,7 +372,7 @@ const App = () => {
                 <span className="text-gray-400 italic">guessing game.</span>
               </h2>
               <p className="text-gray-600 text-lg leading-relaxed max-w-md">
-                We believe in transparency, speed, and absolute reliability. Our fleet is equipped with state-of-the-art telematics, giving you real-time visibility into your critical shipments.
+                In medical logistics, precision is not optional. We combine state-of-the-art telematics with HIPPA-compliant protocols to ensure the integrity of every critical shipment.
               </p>
               <button className="px-8 py-3 border border-regencyDarkBlue text-regencyDarkBlue hover:bg-regencyDarkBlue hover:text-white transition-all uppercase tracking-widest text-xs font-bold mt-4">
                 Our Fleet Technology
@@ -371,9 +383,9 @@ const App = () => {
               <div className="w-full h-full relative overflow-hidden rounded-lg shadow-2xl">
                   <img 
                     id="about-img-parallax"
-                    src="https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?q=80&w=3870&auto=format&fit=crop" 
+                    src="https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?q=80&w=3870&auto=format&fit=crop" 
                     className="absolute inset-0 w-full h-[120%] object-cover"
-                    alt="Warehouse Logistics"
+                    alt="Pharmaceutical Logistics"
                   />
                   <div className="absolute inset-0 bg-regencyBlue/20 mix-blend-multiply"></div>
               </div>
@@ -395,7 +407,7 @@ const App = () => {
                    <RegencyLogo />
                </div>
                <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
-                 Regency Xpress Services is a premier logistics provider specializing in expedited ground freight and final mile delivery.
+                 Regency Xpress Services is a premier logistics provider specializing in expedited medical freight, pharmaceutical transport, and white-glove delivery.
                </p>
             </div>
             
