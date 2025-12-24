@@ -7,12 +7,6 @@ on:
       - main
       - claude/design-regency-xpress-site-b8R1a
   workflow_dispatch:
-    inputs:
-      build_all_branches:
-        description: 'Build all feature branches'
-        required: false
-        default: 'true'
-        type: boolean
 
 permissions:
   contents: read
@@ -62,74 +56,53 @@ jobs:
           COMMIT="${{ steps.info.outputs.commit_short }}"
           DATE_DISPLAY="${{ steps.info.outputs.date_display }}"
 
-          # Update vite.config.ts base path
           node -e "
             const fs = require('fs');
             let config = fs.readFileSync('vite.config.ts', 'utf8');
-            config = config.replace(
-              /base: '[^']*'/,
-              \"base: '/Regency-xpress/builds/${TIMESTAMP}/'\"
-            );
+            config = config.replace(/base: '[^']*'/, \"base: '/Regency-xpress/builds/${TIMESTAMP}/'\");
             fs.writeFileSync('vite.config.ts', config);
           "
 
           npm run build
 
-          # Move build to timestamped folder
           mkdir -p deploy/builds/${TIMESTAMP}
           mv dist/* deploy/builds/${TIMESTAMP}/
 
-          # Create build info file
           echo "{\"timestamp\": \"${TIMESTAMP}\", \"date\": \"${DATE_DISPLAY}\", \"commit\": \"${COMMIT}\", \"branch\": \"${BRANCH}\", \"type\": \"claude\"}" > deploy/builds/${TIMESTAMP}/build-info.json
 
       - name: Build other branches
         continue-on-error: true
         run: |
-          # Get list of codex branches
           CODEX_BRANCHES=$(git branch -r | grep -E 'origin/[0-9]{4}-[0-9]{2}-[0-9]{2}' | sed 's/origin\///' | tr -d ' ')
 
           for BRANCH in $CODEX_BRANCHES; do
             echo "Building branch: $BRANCH"
-
-            # Checkout the branch
             git checkout "origin/${BRANCH}" -- . 2>/dev/null || continue
 
-            # Get branch info
             BRANCH_COMMIT=$(git rev-parse --short "origin/${BRANCH}")
             BRANCH_DATE=$(git log -1 --format="%B %d, %Y at %H:%M:%S UTC" "origin/${BRANCH}" 2>/dev/null || echo "Unknown date")
             BRANCH_TIMESTAMP=$(echo "$BRANCH" | sed 's/[^0-9-]//g' | head -c 19 | tr '/' '_')_codex
 
-            # Reset vite config
             git checkout HEAD -- vite.config.ts 2>/dev/null || true
 
-            # Update base path for this branch
             node -e "
               const fs = require('fs');
               let config = fs.readFileSync('vite.config.ts', 'utf8');
-              config = config.replace(
-                /base: '[^']*'/,
-                \"base: '/Regency-xpress/builds/${BRANCH_TIMESTAMP}/'\"
-              );
+              config = config.replace(/base: '[^']*'/, \"base: '/Regency-xpress/builds/${BRANCH_TIMESTAMP}/'\");
               fs.writeFileSync('vite.config.ts', config);
             " || continue
 
-            # Try to build
             npm run build 2>/dev/null || continue
 
-            # Move build
             mkdir -p deploy/builds/${BRANCH_TIMESTAMP}
             mv dist/* deploy/builds/${BRANCH_TIMESTAMP}/ 2>/dev/null || continue
 
-            # Create build info
             echo "{\"timestamp\": \"${BRANCH_TIMESTAMP}\", \"date\": \"${BRANCH_DATE}\", \"commit\": \"${BRANCH_COMMIT}\", \"branch\": \"${BRANCH}\", \"type\": \"codex\"}" > deploy/builds/${BRANCH_TIMESTAMP}/build-info.json
 
             echo "Successfully built: $BRANCH"
-
-            # Reset for next branch
             git checkout HEAD -- . 2>/dev/null || true
           done
 
-          # Return to original branch
           git checkout ${{ github.ref_name }} -- . 2>/dev/null || true
 
       - name: Download existing builds
@@ -139,7 +112,6 @@ jobs:
           if git show gh-pages:builds 2>/dev/null; then
             git checkout gh-pages -- builds/ 2>/dev/null || true
             if [ -d "builds" ]; then
-              # Copy existing builds that aren't being replaced
               for dir in builds/*/; do
                 dir_name=$(basename "$dir")
                 if [ ! -d "deploy/builds/${dir_name}" ]; then
@@ -164,233 +136,96 @@ jobs:
             fi
           done
           echo "]" >> deploy/builds/manifest.json
-
-          # Sort by timestamp descending and keep last 30 builds
           jq 'sort_by(.timestamp) | reverse | .[0:30]' deploy/builds/manifest.json > temp.json && mv temp.json deploy/builds/manifest.json
 
       - name: Generate index page
         run: |
-          cat > deploy/index.html << 'HTMLEOF'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Regency Xpress - Build Index</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0A0A0B 0%, #0B1221 50%, #0A0A0B 100%);
-      min-height: 100vh;
-      color: #fff;
-      padding: 40px 20px;
-    }
-    .container { max-width: 1000px; margin: 0 auto; }
-    .header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding-bottom: 40px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .logo { max-width: 200px; margin-bottom: 20px; }
-    h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 3rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-      background: linear-gradient(135deg, #CFB53B 0%, #f4e5a3 50%, #CFB53B 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .subtitle { color: rgba(255,255,255,0.5); font-size: 1.1rem; }
-
-    .filter-tabs {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-    }
-    .filter-btn {
-      padding: 10px 20px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: transparent;
-      color: rgba(255,255,255,0.6);
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.3s ease;
-    }
-    .filter-btn:hover, .filter-btn.active {
-      border-color: #CFB53B;
-      color: #CFB53B;
-      background: rgba(207, 181, 59, 0.1);
-    }
-
-    .builds-grid { display: grid; gap: 16px; }
-    .build-card {
-      background: rgba(15, 15, 17, 0.6);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 20px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.3s ease;
-    }
-    .build-card:hover {
-      border-color: rgba(207, 181, 59, 0.3);
-      box-shadow: 0 0 40px rgba(207, 181, 59, 0.1);
-      transform: translateY(-2px);
-    }
-    .build-card.latest { border-color: rgba(207, 181, 59, 0.4); background: rgba(207, 181, 59, 0.05); }
-    .build-card.codex { border-left: 3px solid #4FC3F7; }
-    .build-card.claude { border-left: 3px solid #CFB53B; }
-
-    .build-info h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.1rem;
-      margin-bottom: 6px;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .build-meta {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-    .build-meta span {
-      color: rgba(255,255,255,0.5);
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .build-meta .branch { color: #4FC3F7; }
-    .build-meta .commit { color: #CFB53B; font-family: monospace; }
-
-    .badge {
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    .badge.latest { background: linear-gradient(135deg, #CFB53B, #d4c247); color: #0A0A0B; }
-    .badge.claude { background: rgba(207, 181, 59, 0.2); color: #CFB53B; }
-    .badge.codex { background: rgba(79, 195, 247, 0.2); color: #4FC3F7; }
-
-    .view-btn {
-      background: linear-gradient(135deg, #2B5091, #3d6bb8);
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.85rem;
-      transition: all 0.3s ease;
-      white-space: nowrap;
-    }
-    .view-btn:hover {
-      box-shadow: 0 0 30px rgba(43, 80, 145, 0.4);
-      transform: scale(1.02);
-    }
-
-    .empty-state { text-align: center; padding: 60px; color: rgba(255,255,255,0.4); }
-    .footer {
-      text-align: center;
-      margin-top: 60px;
-      padding-top: 40px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      color: rgba(255,255,255,0.3);
-      font-size: 0.85rem;
-    }
-
-    @media (max-width: 640px) {
-      .build-card { flex-direction: column; gap: 15px; text-align: center; }
-      .build-meta { justify-content: center; }
-      h1 { font-size: 2rem; }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <img src="https://raw.githubusercontent.com/Domusgpt/Regency-xpress/main/logo.png" alt="Regency Xpress" class="logo">
-      <h1>Build Index</h1>
-      <p class="subtitle">All deployed versions of Regency Xpress Services</p>
-    </div>
-
-    <div class="filter-tabs">
-      <button class="filter-btn active" data-filter="all">All Builds</button>
-      <button class="filter-btn" data-filter="claude">Claude Builds</button>
-      <button class="filter-btn" data-filter="codex">Codex Builds</button>
-    </div>
-
-    <div class="builds-grid" id="builds"></div>
-
-    <div class="footer">
-      <p>&copy; 2024 Regency Xpress Services. Automated deployments via GitHub Actions.</p>
-    </div>
-  </div>
-
-  <script>
-    const builds = BUILD_DATA_PLACEHOLDER;
-    let currentFilter = 'all';
-
-    function renderBuilds() {
-      const container = document.getElementById('builds');
-      const filtered = currentFilter === 'all' ? builds : builds.filter(b => b.type === currentFilter);
-
-      if (filtered.length === 0) {
-        container.innerHTML = '<div class="empty-state"><p>No builds available.</p></div>';
-        return;
-      }
-
-      container.innerHTML = filtered.map((build, index) => {
-        const isLatest = index === 0 && currentFilter === 'all';
-        const type = build.type || 'claude';
-        return `
-          <div class="build-card ${type} ${isLatest ? 'latest' : ''}">
-            <div class="build-info">
-              <h3>
-                ${build.date || build.timestamp}
-                ${isLatest ? '<span class="badge latest">Latest</span>' : ''}
-                <span class="badge ${type}">${type}</span>
-              </h3>
-              <div class="build-meta">
-                <span class="branch">Branch: ${build.branch}</span>
-                <span class="commit">Commit: ${build.commit}</span>
+          node -e '
+            const fs = require("fs");
+            const html = `<!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Regency Xpress - Build Index</title>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+            <style>
+              *{margin:0;padding:0;box-sizing:border-box}
+              body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#0A0A0B 0%,#0B1221 50%,#0A0A0B 100%);min-height:100vh;color:#fff;padding:40px 20px}
+              .container{max-width:1000px;margin:0 auto}
+              .header{text-align:center;margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,0.1)}
+              .logo{max-width:200px;margin-bottom:20px}
+              h1{font-family:Syne,sans-serif;font-size:3rem;font-weight:800;margin-bottom:10px;background:linear-gradient(135deg,#CFB53B 0%,#f4e5a3 50%,#CFB53B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+              .subtitle{color:rgba(255,255,255,0.5);font-size:1.1rem}
+              .filter-tabs{display:flex;gap:10px;justify-content:center;margin-bottom:30px;flex-wrap:wrap}
+              .filter-btn{padding:10px 20px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.6);border-radius:20px;cursor:pointer;font-size:0.85rem;transition:all 0.3s ease}
+              .filter-btn:hover,.filter-btn.active{border-color:#CFB53B;color:#CFB53B;background:rgba(207,181,59,0.1)}
+              .builds-grid{display:grid;gap:16px}
+              .build-card{background:rgba(15,15,17,0.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;transition:all 0.3s ease}
+              .build-card:hover{border-color:rgba(207,181,59,0.3);box-shadow:0 0 40px rgba(207,181,59,0.1);transform:translateY(-2px)}
+              .build-card.latest{border-color:rgba(207,181,59,0.4);background:rgba(207,181,59,0.05)}
+              .build-card.codex{border-left:3px solid #4FC3F7}
+              .build-card.claude{border-left:3px solid #CFB53B}
+              .build-info h3{font-family:Syne,sans-serif;font-size:1.1rem;margin-bottom:6px;color:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+              .build-meta{display:flex;gap:15px;flex-wrap:wrap}
+              .build-meta span{color:rgba(255,255,255,0.5);font-size:0.8rem}
+              .build-meta .branch{color:#4FC3F7}
+              .build-meta .commit{color:#CFB53B;font-family:monospace}
+              .badge{padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:600;text-transform:uppercase}
+              .badge.latest{background:linear-gradient(135deg,#CFB53B,#d4c247);color:#0A0A0B}
+              .badge.claude{background:rgba(207,181,59,0.2);color:#CFB53B}
+              .badge.codex{background:rgba(79,195,247,0.2);color:#4FC3F7}
+              .view-btn{background:linear-gradient(135deg,#2B5091,#3d6bb8);color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.85rem;transition:all 0.3s ease;white-space:nowrap}
+              .view-btn:hover{box-shadow:0 0 30px rgba(43,80,145,0.4);transform:scale(1.02)}
+              .empty-state{text-align:center;padding:60px;color:rgba(255,255,255,0.4)}
+              .footer{text-align:center;margin-top:60px;padding-top:40px;border-top:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);font-size:0.85rem}
+              @media(max-width:640px){.build-card{flex-direction:column;gap:15px;text-align:center}.build-meta{justify-content:center}h1{font-size:2rem}}
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <img src="https://raw.githubusercontent.com/Domusgpt/Regency-xpress/main/logo.png" alt="Regency Xpress" class="logo">
+                <h1>Build Index</h1>
+                <p class="subtitle">All deployed versions of Regency Xpress Services</p>
               </div>
+              <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">All Builds</button>
+                <button class="filter-btn" data-filter="claude">Claude Builds</button>
+                <button class="filter-btn" data-filter="codex">Codex Builds</button>
+              </div>
+              <div class="builds-grid" id="builds"></div>
+              <div class="footer"><p>&copy; 2024 Regency Xpress Services. Automated deployments via GitHub Actions.</p></div>
             </div>
-            <a href="./builds/${build.timestamp}/" class="view-btn">View Build →</a>
-          </div>
-        `;
-      }).join('');
-    }
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
-        renderBuilds();
-      });
-    });
-
-    renderBuilds();
-  </script>
-</body>
-</html>
-HTMLEOF
+            <script>
+              const builds = BUILD_DATA_PLACEHOLDER;
+              let currentFilter = "all";
+              function renderBuilds() {
+                const container = document.getElementById("builds");
+                const filtered = currentFilter === "all" ? builds : builds.filter(b => b.type === currentFilter);
+                if (filtered.length === 0) { container.innerHTML = "<div class=empty-state><p>No builds available.</p></div>"; return; }
+                container.innerHTML = filtered.map((build, index) => {
+                  const isLatest = index === 0 && currentFilter === "all";
+                  const type = build.type || "claude";
+                  return \`<div class="build-card \${type} \${isLatest ? "latest" : ""}"><div class="build-info"><h3>\${build.date || build.timestamp}\${isLatest ? "<span class=\\"badge latest\\">Latest</span>" : ""}<span class="badge \${type}">\${type}</span></h3><div class="build-meta"><span class="branch">Branch: \${build.branch}</span><span class="commit">Commit: \${build.commit}</span></div></div><a href="./builds/\${build.timestamp}/" class="view-btn">View Build →</a></div>\`;
+                }).join("");
+              }
+              document.querySelectorAll(".filter-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+                  btn.classList.add("active");
+                  currentFilter = btn.dataset.filter;
+                  renderBuilds();
+                });
+              });
+              renderBuilds();
+            </script>
+          </body>
+          </html>`;
+            fs.writeFileSync("deploy/index.html", html);
+          '
 
       - name: Inject build data into index
         run: |
