@@ -7,6 +7,7 @@ on:
     branches:
       - main
       - claude/design-regency-xpress-site-b8R1a
+      - 2025-12-24/21-24-50design-webpage-for-regency-xpresscodex
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
