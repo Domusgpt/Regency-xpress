@@ -304,9 +304,14 @@ jobs:
           # Sort by timestamp descending and keep last 20 builds
           jq 'sort_by(.timestamp) | reverse | .[0:20]' "$MANIFEST_FILE" > temp.json && mv temp.json "$MANIFEST_FILE"
 
-          # Inject build data into index.html
-          BUILD_DATA=$(cat "$MANIFEST_FILE")
-          sed -i "s|BUILD_DATA_PLACEHOLDER|$BUILD_DATA|" deploy/index.html
+          # Inject build data into index.html using node (safer for JSON)
+          node -e "
+            const fs = require('fs');
+            const buildData = fs.readFileSync('deploy/builds/manifest.json', 'utf8');
+            let html = fs.readFileSync('deploy/index.html', 'utf8');
+            html = html.replace('BUILD_DATA_PLACEHOLDER', buildData);
+            fs.writeFileSync('deploy/index.html', html);
+          "
 
       - name: Cleanup old builds
         run: |
