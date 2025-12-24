@@ -7,6 +7,7 @@ on:
       - main
       - claude/design-regency-xpress-site-b8R1a
       - 2025-12-24/21-24-50design-webpage-for-regency-xpresscodex
+      - 2025-12-24/22-31-16design-webpage-for-regency-xpresscodex
   workflow_dispatch:
 
 permissions:
