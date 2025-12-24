@@ -18,3 +18,8 @@ View your app in AI Studio: https://ai.studio/apps/drive/1rrKpWvm_GxLainBwEM5mJa
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Deploy
+
+- Builds are configured with a relative base path so they can be hosted from branch-specific previews or project subpaths.
+- Optionally set `VITE_BASE_PATH` (for example `/Regency-xpress/`) before running `npm run build` if your hosting requires a custom mount point.
