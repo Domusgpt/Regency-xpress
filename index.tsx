@@ -149,11 +149,19 @@ const GeometricBullLogo = ({ className = "", showText = true }) => (
 // ============================================================================
 // LOGO COMPONENT WITH FALLBACK
 // ============================================================================
-const RegencyLogo = ({ className = "", showText = true, size = "default" }) => {
+type LogoSize = "small" | "default" | "large" | "hero";
+
+interface RegencyLogoProps {
+  className?: string;
+  showText?: boolean;
+  size?: LogoSize;
+}
+
+const RegencyLogo: React.FC<RegencyLogoProps> = ({ className = "", showText = true, size = "default" }) => {
   const [imageError, setImageError] = useState(false);
   const hasUrl = LOGO_URL && LOGO_URL.length > 0;
 
-  const sizeClasses = {
+  const sizeClasses: Record<LogoSize, string> = {
     small: "max-w-[120px]",
     default: "max-w-[200px]",
     large: "max-w-[400px]",
@@ -231,7 +239,11 @@ const FloatingParticles = () => {
 // ============================================================================
 // NAVIGATION
 // ============================================================================
-const Navigation = ({ scrolled }) => {
+interface NavigationProps {
+  scrolled: boolean;
+}
+
+const Navigation: React.FC<NavigationProps> = ({ scrolled }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -703,7 +715,11 @@ const Footer = () => (
 // ============================================================================
 // LOADING SCREEN
 // ============================================================================
-const LoadingScreen = ({ progress }) => (
+interface LoadingScreenProps {
+  progress: number;
+}
+
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress }) => (
   <div id="loader" className="fixed inset-0 z-[100] bg-regencyDark flex flex-col items-center justify-center">
     <div className="mb-8">
       <GeometricBullLogo showText={false} className="w-32 h-32 animate-pulse" />
@@ -887,16 +903,15 @@ const App = () => {
       // ========================================
       // SMOOTH SCROLL LINKS
       // ========================================
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+      document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e: Event) => {
           e.preventDefault();
-          const target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-            gsap.to(window, {
-              duration: 1,
-              scrollTo: { y: target, offsetY: 80 },
-              ease: "power3.inOut"
-            });
+          const href = anchor.getAttribute('href');
+          if (href) {
+            const target = document.querySelector(href);
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth' });
+            }
           }
         });
       });

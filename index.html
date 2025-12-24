@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Regency Xpress Services | Premium Medical Logistics</title>
     <meta name="description" content="Regency Xpress Services - Intelligent Medical Logistics. STAT delivery, clinical trials, and white-glove pharmaceutical transport.">
+    <link rel="icon" type="image/png" href="/logo.png">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind -->
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -23,17 +24,14 @@
               mono: ['Space Grotesk', 'monospace'],
             },
             colors: {
-              // Primary Brand Colors (from logo)
               regencyBlue: '#2B5091',
               regencyGold: '#CFB53B',
-              // Extended Palette
               regencyNavy: '#0B1221',
               regencyDark: '#0A0A0B',
               regencyDeep: '#101318',
               regencySlate: '#1a1f2e',
               regencyCyan: '#4FC3F7',
               regencyPurple: '#7B3FF2',
-              // Neutrals
               regencyWhite: '#ffffff',
               regencyOffWhite: '#f4f4f5',
               regencyGray: {
@@ -105,7 +103,6 @@
     </script>
 
     <style>
-      /* Base Styles */
       * {
         margin: 0;
         padding: 0;
@@ -123,7 +120,6 @@
         font-family: 'Inter', sans-serif;
       }
 
-      /* Scrollbar Styles */
       ::-webkit-scrollbar {
         width: 8px;
       }
@@ -146,7 +142,6 @@
         scrollbar-width: none;
       }
 
-      /* Glassmorphism */
       .glass {
         background: rgba(15, 15, 17, 0.6);
         backdrop-filter: blur(16px);
@@ -168,7 +163,6 @@
         border: 1px solid rgba(207, 181, 59, 0.2);
       }
 
-      /* Text Gradient Shimmer */
       .text-shimmer {
         background: linear-gradient(
           135deg,
@@ -199,7 +193,6 @@
         background-clip: text;
       }
 
-      /* Border Gradient Flow */
       .border-gradient {
         position: relative;
       }
@@ -217,7 +210,6 @@
         animation: border-flow 4s linear infinite;
       }
 
-      /* Glow Effects */
       .glow-gold {
         box-shadow: 0 0 60px rgba(207, 181, 59, 0.15), 0 0 100px rgba(207, 181, 59, 0.1);
       }
@@ -226,7 +218,6 @@
         box-shadow: 0 0 60px rgba(43, 80, 145, 0.2), 0 0 100px rgba(43, 80, 145, 0.1);
       }
 
-      /* Noise Texture Overlay */
       .noise-overlay {
         position: fixed;
         top: 0;
@@ -239,12 +230,10 @@
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
       }
 
-      /* Perspective Container */
       .perspective-container {
         perspective: 1000px;
       }
 
-      /* 3D Card Effect */
       .card-3d {
         transform-style: preserve-3d;
         transition: transform 0.5s ease;
@@ -254,35 +243,10 @@
         transform: rotateY(-5deg) rotateX(5deg) translateZ(20px);
       }
 
-      /* Magnetic Button Effect */
       .magnetic-btn {
         transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
       }
 
-      /* Line Animation */
-      .line-draw {
-        stroke-dasharray: 1000;
-        stroke-dashoffset: 1000;
-      }
-
-      /* Particle Background */
-      .particles {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .particle {
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        background: rgba(207, 181, 59, 0.4);
-        border-radius: 50%;
-        animation: float 8s ease-in-out infinite;
-      }
-
-      /* Grid Background */
       .grid-bg {
         background-image:
           linear-gradient(rgba(43, 80, 145, 0.03) 1px, transparent 1px),
@@ -290,36 +254,11 @@
         background-size: 60px 60px;
       }
 
-      /* Smooth Reveal */
       .reveal {
         opacity: 0;
         transform: translateY(60px);
       }
 
-      /* Split Text */
-      .split-char {
-        display: inline-block;
-        opacity: 0;
-        transform: translateY(100%);
-      }
-
-      /* Loading Screen */
-      #loader {
-        transition: opacity 0.6s ease, visibility 0.6s ease;
-      }
-
-      #loader.loaded {
-        opacity: 0;
-        visibility: hidden;
-      }
-
-      /* Custom Selection */
-      ::selection {
-        background: rgba(207, 181, 59, 0.3);
-        color: #fff;
-      }
-
-      /* Blur Gradient Orbs */
       .orb {
         position: absolute;
         border-radius: 50%;
@@ -328,7 +267,6 @@
         pointer-events: none;
       }
 
-      /* Responsive Typography */
       .hero-title {
         font-size: clamp(3rem, 10vw, 8rem);
         line-height: 0.95;
@@ -338,26 +276,15 @@
         font-size: clamp(2rem, 5vw, 4rem);
         line-height: 1.1;
       }
-    </style>
 
-    <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/client": "https://esm.sh/react-dom@^19.2.3/client",
-    "gsap": "https://esm.sh/gsap@3.12.5",
-    "gsap/ScrollTrigger": "https://esm.sh/gsap@3.12.5/ScrollTrigger",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "gsap/": "https://esm.sh/gsap@^3.14.2/",
-    "react/": "https://esm.sh/react@^19.2.3/"
-  }
-}
-</script>
+      ::selection {
+        background: rgba(207, 181, 59, 0.3);
+        color: #fff;
+      }
+    </style>
   </head>
   <body class="bg-regencyDark text-white">
-    <!-- Noise Overlay -->
     <div class="noise-overlay"></div>
-
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
