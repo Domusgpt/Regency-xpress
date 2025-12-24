@@ -3,14 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Regency Xpress Services</title>
-    
+    <title>Regency Xpress Services | Premium Medical Logistics</title>
+    <meta name="description" content="Regency Xpress Services - Intelligent Medical Logistics. STAT delivery, clinical trials, and white-glove pharmaceutical transport.">
+    <link rel="icon" type="image/png" href="/logo.png">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -19,68 +21,270 @@
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
               display: ['Syne', 'sans-serif'],
+              mono: ['Space Grotesk', 'monospace'],
             },
             colors: {
+              regencyBlue: '#2B5091',
+              regencyGold: '#CFB53B',
+              regencyNavy: '#0B1221',
+              regencyDark: '#0A0A0B',
+              regencyDeep: '#101318',
+              regencySlate: '#1a1f2e',
+              regencyCyan: '#4FC3F7',
+              regencyPurple: '#7B3FF2',
               regencyWhite: '#ffffff',
               regencyOffWhite: '#f4f4f5',
-              regencyDarkBlue: '#0b1221', // Deep Navy for Text
-              regencyBlue: '#255091', // Royal Blue from Logo
-              regencyGold: '#cfb53b', // Gold from Logo
+              regencyGray: {
+                50: '#fafafa',
+                100: '#f4f4f5',
+                200: '#e4e4e7',
+                300: '#d4d4d8',
+                400: '#a1a1aa',
+                500: '#71717a',
+                600: '#52525b',
+                700: '#3f3f46',
+                800: '#27272a',
+                900: '#18181b',
+              }
             },
             backgroundImage: {
-              'grid-pattern': "radial-gradient(#255091 0.5px, transparent 0.5px)",
+              'grid-pattern': "radial-gradient(rgba(43,80,145,0.3) 1px, transparent 1px)",
+              'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+              'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
             },
             animation: {
-              'bounce-x': 'bounce-x 1s infinite',
+              'float': 'float 6s ease-in-out infinite',
+              'float-delayed': 'float 6s ease-in-out 3s infinite',
+              'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
+              'shimmer': 'shimmer 3s linear infinite',
+              'marquee': 'marquee 30s linear infinite',
+              'spin-slow': 'spin 20s linear infinite',
+              'gradient-shift': 'gradient-shift 8s ease infinite',
+              'border-flow': 'border-flow 4s linear infinite',
             },
             keyframes: {
-              'bounce-x': {
-                '0%, 100%': { transform: 'translateX(0)' },
-                '50%': { transform: 'translateX(25%)' },
-              }
+              'float': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
+              },
+              'pulse-glow': {
+                '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+                '50%': { opacity: '0.8', transform: 'scale(1.05)' },
+              },
+              'shimmer': {
+                '0%': { backgroundPosition: '-200% 0' },
+                '100%': { backgroundPosition: '200% 0' },
+              },
+              'marquee': {
+                '0%': { transform: 'translateX(0)' },
+                '100%': { transform: 'translateX(-50%)' },
+              },
+              'gradient-shift': {
+                '0%, 100%': { backgroundPosition: '0% 50%' },
+                '50%': { backgroundPosition: '100% 50%' },
+              },
+              'border-flow': {
+                '0%': { backgroundPosition: '0% 0%' },
+                '100%': { backgroundPosition: '200% 0%' },
+              },
+            },
+            boxShadow: {
+              'glow-gold': '0 0 40px rgba(207, 181, 59, 0.3)',
+              'glow-blue': '0 0 40px rgba(43, 80, 145, 0.3)',
+              'glow-cyan': '0 0 30px rgba(79, 195, 247, 0.3)',
+              'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+            },
+            backdropBlur: {
+              'xs': '2px',
             }
           }
         }
       }
     </script>
-    
+
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       html {
         scroll-behavior: smooth;
       }
+
       body {
-        background-color: #ffffff;
-        color: #0b1221;
+        background-color: #0A0A0B;
+        color: #ffffff;
         overflow-x: hidden;
+        font-family: 'Inter', sans-serif;
       }
+
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0A0A0B;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #2B5091, #CFB53B);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #CFB53B, #2B5091);
+      }
+
       .scrollbar-hide::-webkit-scrollbar {
-          display: none;
+        display: none;
       }
       .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
-      /* Marquee Animation */
-      @keyframes marquee {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
+
+      .glass {
+        background: rgba(15, 15, 17, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .glass-light {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .glass-gold {
+        background: rgba(207, 181, 59, 0.08);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(207, 181, 59, 0.2);
+      }
+
+      .text-shimmer {
+        background: linear-gradient(
+          135deg,
+          #CFB53B 0%,
+          #fff 25%,
+          #CFB53B 50%,
+          #fff 75%,
+          #CFB53B 100%
+        );
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 4s linear infinite;
+      }
+
+      .text-gradient-blue {
+        background: linear-gradient(135deg, #2B5091 0%, #4FC3F7 50%, #2B5091 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .text-gradient-gold {
+        background: linear-gradient(135deg, #CFB53B 0%, #f4e5a3 50%, #CFB53B 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .border-gradient {
+        position: relative;
+      }
+      .border-gradient::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(90deg, #2B5091, #CFB53B, #2B5091);
+        background-size: 200% 100%;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: border-flow 4s linear infinite;
+      }
+
+      .glow-gold {
+        box-shadow: 0 0 60px rgba(207, 181, 59, 0.15), 0 0 100px rgba(207, 181, 59, 0.1);
+      }
+
+      .glow-blue {
+        box-shadow: 0 0 60px rgba(43, 80, 145, 0.2), 0 0 100px rgba(43, 80, 145, 0.1);
+      }
+
+      .noise-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.02;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      }
+
+      .perspective-container {
+        perspective: 1000px;
+      }
+
+      .card-3d {
+        transform-style: preserve-3d;
+        transition: transform 0.5s ease;
+      }
+
+      .card-3d:hover {
+        transform: rotateY(-5deg) rotateX(5deg) translateZ(20px);
+      }
+
+      .magnetic-btn {
+        transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      .grid-bg {
+        background-image:
+          linear-gradient(rgba(43, 80, 145, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(43, 80, 145, 0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(60px);
+      }
+
+      .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      .hero-title {
+        font-size: clamp(3rem, 10vw, 8rem);
+        line-height: 0.95;
+      }
+
+      .section-title {
+        font-size: clamp(2rem, 5vw, 4rem);
+        line-height: 1.1;
+      }
+
+      ::selection {
+        background: rgba(207, 181, 59, 0.3);
+        color: #fff;
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/client": "https://esm.sh/react-dom@^19.2.3/client",
-    "gsap": "https://esm.sh/gsap@3.12.5",
-    "gsap/ScrollTrigger": "https://esm.sh/gsap@3.12.5/ScrollTrigger",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "gsap/": "https://esm.sh/gsap@^3.14.2/",
-    "react/": "https://esm.sh/react@^19.2.3/"
-  }
-}
-</script>
-</head>
-  <body>
+  </head>
+  <body class="bg-regencyDark text-white">
+    <div class="noise-overlay"></div>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
