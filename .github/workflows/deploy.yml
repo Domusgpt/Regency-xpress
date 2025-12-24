@@ -51,7 +51,18 @@ jobs:
         run: |
           # Build with timestamped subdirectory
           TIMESTAMP="${{ steps.info.outputs.timestamp }}"
-          sed -i "s|base: '/Regency-xpress/'|base: '/Regency-xpress/builds/${TIMESTAMP}/'|" vite.config.ts
+
+          # Update vite.config.ts base path using node
+          node -e "
+            const fs = require('fs');
+            let config = fs.readFileSync('vite.config.ts', 'utf8');
+            config = config.replace(
+              \"base: '/Regency-xpress/'\",
+              \"base: '/Regency-xpress/builds/${TIMESTAMP}/'\"
+            );
+            fs.writeFileSync('vite.config.ts', config);
+          "
+
           npm run build
 
           # Move build to timestamped folder
