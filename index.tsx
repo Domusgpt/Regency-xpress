@@ -20,6 +20,15 @@ const IMAGES = {
   warehouse: "https://images.unsplash.com/photo-1553413077-190dd305871c?w=800&q=80",
   delivery: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=800&q=80",
   about: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=800&q=80",
+  // Morphing Section Images
+  cargoPlane: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80",
+  airportCargo: "https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=1920&q=80",
+  medicalLab: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1920&q=80",
+  hospitalCorridor: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1920&q=80",
+  deliveryVan: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=1920&q=80",
+  coldChain: "https://images.unsplash.com/photo-1587293852726-70cdb56c2866?w=1920&q=80",
+  logistics: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=1920&q=80",
+  medicalSupplies: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1920&q=80",
 };
 
 // ============================================================================
@@ -405,17 +414,17 @@ const MarqueeSection = () => (
 );
 
 // ============================================================================
-// MORPHING EXPERIENCE SECTION - 800vh Scroll-Locked Transformation
+// MORPHING EXPERIENCE SECTION - 800vh Scroll-Locked with Parallax & Images
 // ============================================================================
 const MorphingSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [activeState, setActiveState] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useLayoutEffect(() => {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Main scroll trigger
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top top",
@@ -424,7 +433,7 @@ const MorphingSection = () => {
         pinSpacing: false,
         onUpdate: (self) => {
           const progress = self.progress;
-          // 5 states: 0-20%, 20-40%, 40-60%, 60-80%, 80-100%
+          setScrollProgress(progress);
           const newState = Math.min(4, Math.floor(progress * 5));
           setActiveState(newState);
         },
@@ -434,87 +443,178 @@ const MorphingSection = () => {
     return () => ctx.revert();
   }, []);
 
-  // Background colors for each state
-  const bgColors = [
-    "bg-regencyNavy",
-    "bg-regencyDark",
-    "bg-regencyNavy",
-    "bg-regencyDark",
-    "bg-regencyNavy",
+  // Parallax offset calculations
+  const parallaxSlow = scrollProgress * 100;
+  const parallaxMedium = scrollProgress * 200;
+  const parallaxFast = scrollProgress * 300;
+
+  // State-specific background images
+  const stateImages = [
+    IMAGES.cargoPlane,
+    IMAGES.airportCargo,
+    IMAGES.coldChain,
+    IMAGES.hospitalCorridor,
+    IMAGES.medicalSupplies,
   ];
 
   return (
     <section ref={sectionRef} id="morphing-section" className="relative" style={{ height: "800vh" }}>
-      <div className={`morphing-viewport h-screen w-full overflow-hidden sticky top-0 ${bgColors[activeState]} transition-colors duration-700`}>
+      <div className="morphing-viewport h-screen w-full overflow-hidden sticky top-0 bg-regencyNavy">
 
-        {/* Animated background orbs */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* ===== PARALLAX BACKGROUND LAYERS ===== */}
+        {stateImages.map((img, i) => (
           <div
-            className="absolute w-96 h-96 rounded-full blur-[150px] transition-all duration-1000"
+            key={i}
+            className="absolute inset-0 transition-opacity duration-1000"
             style={{
-              background: activeState % 2 === 0 ? "rgba(43,80,145,0.2)" : "rgba(207,181,59,0.15)",
+              opacity: activeState === i ? 1 : 0,
+              transform: `translateY(${(scrollProgress - i * 0.2) * -50}px) scale(${1.1 + scrollProgress * 0.1})`,
+            }}
+          >
+            <img
+              src={img}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{ filter: "brightness(0.3) saturate(0.8)" }}
+            />
+          </div>
+        ))}
+
+        {/* ===== GRADIENT OVERLAYS ===== */}
+        <div className="absolute inset-0 bg-gradient-to-b from-regencyNavy/80 via-transparent to-regencyNavy/90 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-regencyNavy/60 via-transparent to-regencyNavy/60 z-10" />
+
+        {/* ===== FLOATING PARALLAX ELEMENTS ===== */}
+        <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
+          {/* Slow layer - large blurred shapes */}
+          <div
+            className="absolute w-[600px] h-[600px] rounded-full blur-[200px] transition-all duration-500"
+            style={{
+              background: `radial-gradient(circle, rgba(43,80,145,0.4) 0%, transparent 70%)`,
+              top: "10%",
+              left: "-10%",
+              transform: `translate(${parallaxSlow * 0.5}px, ${parallaxSlow * 0.3}px)`,
+            }}
+          />
+          <div
+            className="absolute w-[500px] h-[500px] rounded-full blur-[180px] transition-all duration-500"
+            style={{
+              background: `radial-gradient(circle, rgba(207,181,59,0.3) 0%, transparent 70%)`,
+              bottom: "5%",
+              right: "-5%",
+              transform: `translate(${-parallaxSlow * 0.4}px, ${-parallaxSlow * 0.2}px)`,
+            }}
+          />
+
+          {/* Medium layer - geometric shapes */}
+          <div
+            className="absolute w-32 h-32 border border-regencyGold/20 rotate-45"
+            style={{
               top: "20%",
-              left: "10%",
-              transform: `translate(${activeState * 20}px, ${activeState * 30}px)`,
+              right: "15%",
+              transform: `translate(${-parallaxMedium * 0.3}px, ${parallaxMedium * 0.2}px) rotate(${45 + scrollProgress * 90}deg)`,
+              opacity: 0.6,
             }}
           />
           <div
-            className="absolute w-72 h-72 rounded-full blur-[120px] transition-all duration-1000"
+            className="absolute w-20 h-20 border border-regencyBlue/30"
             style={{
-              background: activeState % 2 === 0 ? "rgba(207,181,59,0.15)" : "rgba(43,80,145,0.2)",
-              bottom: "20%",
-              right: "10%",
-              transform: `translate(${-activeState * 15}px, ${-activeState * 20}px)`,
+              bottom: "30%",
+              left: "10%",
+              transform: `translate(${parallaxMedium * 0.25}px, ${-parallaxMedium * 0.15}px) rotate(${scrollProgress * 60}deg)`,
+              opacity: 0.5,
             }}
           />
+
+          {/* Fast layer - small accent dots */}
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 rounded-full bg-regencyGold/40"
+              style={{
+                top: `${15 + i * 15}%`,
+                left: `${10 + i * 15}%`,
+                transform: `translate(${parallaxFast * (0.1 + i * 0.05)}px, ${parallaxFast * (0.08 - i * 0.02)}px)`,
+              }}
+            />
+          ))}
         </div>
 
-        {/* Progress dots */}
+        {/* ===== PROGRESS INDICATOR ===== */}
         <div className="absolute right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
           {[0, 1, 2, 3, 4].map((i) => (
             <div
               key={i}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                activeState === i ? "bg-regencyGold scale-150" : activeState > i ? "bg-regencyGold/60" : "bg-white/30"
+                activeState === i ? "bg-regencyGold scale-150 shadow-lg shadow-regencyGold/50" : activeState > i ? "bg-regencyGold/60" : "bg-white/30"
               }`}
             />
           ))}
         </div>
 
-        {/* STATE 0: Opening Question */}
+        {/* ===== STATE 0: Hero Opening ===== */}
         {activeState === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
-            <div className="text-center max-w-4xl px-6">
-              <div className="w-24 h-24 mx-auto mb-8 rounded-full border-2 border-regencyGold/30 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-regencyGold/20 flex items-center justify-center">
-                  <Icons.Van className="w-8 h-8 text-regencyGold" />
-                </div>
+          <div className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn">
+            {/* Parallax image inset */}
+            <div
+              className="absolute right-[5%] top-1/2 -translate-y-1/2 w-[40%] max-w-md aspect-[3/4] rounded-2xl overflow-hidden hidden lg:block"
+              style={{
+                transform: `translateY(calc(-50% + ${parallaxMedium * 0.1}px))`,
+              }}
+            >
+              <img src={IMAGES.cargoPlane} alt="Cargo Aircraft" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-regencyNavy via-regencyNavy/30 to-transparent" />
+              {/* Glassmorphism overlay card */}
+              <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
+                <p className="text-white/80 text-sm font-medium">24/7 Airport Operations</p>
+                <p className="text-regencyGold text-xs mt-1">Tarmac-ready teams nationwide</p>
+              </div>
+            </div>
+
+            <div className="text-center max-w-2xl px-6 lg:mr-[30%]">
+              <div className="w-20 h-20 mx-auto mb-8 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                <Icons.Globe className="w-10 h-10 text-regencyGold" />
               </div>
               <h2 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6">
                 From Runway<br />
-                <span className="text-regencyGold">to Recovery</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold via-yellow-300 to-regencyGold">to Recovery</span>
               </h2>
-              <p className="text-xl md:text-2xl text-white/50">Airport to patient. No delays. No excuses.</p>
+              <p className="text-lg md:text-xl text-white/60">Airport to patient. No delays. No excuses.</p>
             </div>
           </div>
         )}
 
-        {/* STATE 1: Four Pillars */}
+        {/* ===== STATE 1: Four Pillars with Image Cards ===== */}
         {activeState === 1 && (
-          <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
-            <div className="max-w-5xl mx-auto px-6">
+          <div className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn">
+            <div className="max-w-6xl mx-auto px-6 w-full">
               <h3 className="text-center text-xs text-regencyGold tracking-[0.3em] uppercase mb-10">Our Pillars</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {[
-                  { num: "01", title: "Direct Routes", desc: "Airport to final mile" },
-                  { num: "02", title: "Chain of Custody", desc: "Documented every step" },
-                  { num: "03", title: "Temp Control", desc: "Maintained in transit" },
-                  { num: "04", title: "Priority", desc: "Medical cargo first" },
+                  { num: "01", title: "Direct Routes", desc: "Airport to final mile", img: IMAGES.airportCargo },
+                  { num: "02", title: "Chain of Custody", desc: "Documented every step", img: IMAGES.logistics },
+                  { num: "03", title: "Temp Control", desc: "Maintained in transit", img: IMAGES.coldChain },
+                  { num: "04", title: "Priority", desc: "Medical cargo first", img: IMAGES.medicalSupplies },
                 ].map((item, i) => (
-                  <div key={i} className="p-6 rounded-xl bg-white/5 border border-white/10">
-                    <span className="text-regencyGold/50 text-xs font-mono">{item.num}</span>
-                    <h4 className="text-lg md:text-xl font-display font-bold text-white mt-2 mb-1">{item.title}</h4>
-                    <p className="text-white/40 text-sm">{item.desc}</p>
+                  <div
+                    key={i}
+                    className="group relative rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 hover:border-regencyGold/40 transition-all duration-500"
+                    style={{
+                      transform: `translateY(${(parallaxMedium * 0.05) * (i % 2 === 0 ? 1 : -1)}px)`,
+                    }}
+                  >
+                    {/* Background image */}
+                    <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-500">
+                      <img src={item.img} alt="" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-regencyNavy via-regencyNavy/80 to-regencyNavy/40" />
+
+                    {/* Content */}
+                    <div className="relative p-6 h-full flex flex-col justify-end min-h-[200px]">
+                      <span className="text-regencyGold/50 text-xs font-mono mb-2">{item.num}</span>
+                      <h4 className="text-lg md:text-xl font-display font-bold text-white mb-1 group-hover:text-regencyGold transition-colors">{item.title}</h4>
+                      <p className="text-white/50 text-sm">{item.desc}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -522,40 +622,79 @@ const MorphingSection = () => {
           </div>
         )}
 
-        {/* STATE 2: Philosophy Quote */}
+        {/* ===== STATE 2: Philosophy with Cinematic Background ===== */}
         {activeState === 2 && (
-          <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
+          <div className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn">
+            {/* Side image panels with parallax */}
+            <div
+              className="absolute left-0 top-0 bottom-0 w-1/4 overflow-hidden hidden lg:block"
+              style={{ transform: `translateX(${-parallaxSlow * 0.2}px)` }}
+            >
+              <img src={IMAGES.deliveryVan} alt="" className="w-full h-full object-cover opacity-40" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-regencyNavy" />
+            </div>
+            <div
+              className="absolute right-0 top-0 bottom-0 w-1/4 overflow-hidden hidden lg:block"
+              style={{ transform: `translateX(${parallaxSlow * 0.2}px)` }}
+            >
+              <img src={IMAGES.hospitalCorridor} alt="" className="w-full h-full object-cover opacity-40" />
+              <div className="absolute inset-0 bg-gradient-to-l from-transparent to-regencyNavy" />
+            </div>
+
             <div className="text-center max-w-3xl px-6">
-              <div className="relative py-12">
-                <span className="absolute top-0 left-0 text-8xl md:text-9xl font-display text-regencyGold/20 leading-none">"</span>
-                <p className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-white leading-tight px-8">
+              {/* Glassmorphism quote card */}
+              <div className="relative p-8 md:p-12 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10">
+                <span className="absolute -top-6 left-8 text-8xl md:text-9xl font-display text-regencyGold/30 leading-none">"</span>
+                <p className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-white leading-tight">
                   When it lands, we're already there.
                 </p>
-                <span className="absolute bottom-0 right-0 text-8xl md:text-9xl font-display text-regencyGold/20 leading-none rotate-180">"</span>
+                <span className="absolute -bottom-6 right-8 text-8xl md:text-9xl font-display text-regencyGold/30 leading-none rotate-180">"</span>
+
+                <div className="mt-8 pt-6 border-t border-white/10">
+                  <p className="text-regencyGold text-sm tracking-[0.2em] uppercase">— The Regency Promise</p>
+                </div>
               </div>
-              <p className="mt-8 text-regencyGold text-sm tracking-[0.2em] uppercase">— The Regency Promise</p>
             </div>
           </div>
         )}
 
-        {/* STATE 3: The Journey */}
+        {/* ===== STATE 3: Journey with Image Grid ===== */}
         {activeState === 3 && (
-          <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
-            <div className="max-w-4xl mx-auto px-6">
+          <div className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn">
+            <div className="max-w-5xl mx-auto px-6 w-full">
               <h3 className="text-center text-xs text-regencyGold tracking-[0.3em] uppercase mb-10">The Full Journey</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 md:gap-6">
                 {[
-                  { icon: Icons.Globe, title: "Airport Coordination", desc: "Tarmac-ready teams" },
-                  { icon: Icons.Medical, title: "Hospital Delivery", desc: "Direct to facility" },
-                  { icon: Icons.MapPin, title: "Live Tracking", desc: "Real-time visibility" },
-                  { icon: Icons.Shield, title: "Compliance", desc: "Full documentation" },
+                  { icon: Icons.Globe, title: "Airport Coordination", desc: "Tarmac-ready teams at major hubs", img: IMAGES.cargoPlane },
+                  { icon: Icons.Thermometer, title: "Cold Chain", desc: "2-8°C maintained throughout", img: IMAGES.coldChain },
+                  { icon: Icons.Van, title: "Express Fleet", desc: "GPS-tracked medical vehicles", img: IMAGES.deliveryVan },
+                  { icon: Icons.Medical, title: "Hospital Delivery", desc: "Direct to facility dock", img: IMAGES.hospitalCorridor },
                 ].map((item, i) => (
-                  <div key={i} className="p-6 rounded-xl bg-white/5 border border-white/10 text-center">
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-regencyBlue/20 flex items-center justify-center">
-                      <item.icon className="w-6 h-6 text-regencyBlue" />
+                  <div
+                    key={i}
+                    className="group relative rounded-2xl overflow-hidden"
+                    style={{
+                      transform: `translateY(${(parallaxMedium * 0.03) * (i < 2 ? 1 : -1)}px)`,
+                    }}
+                  >
+                    {/* Full image background */}
+                    <div className="absolute inset-0">
+                      <img src={item.img} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
-                    <h4 className="text-base md:text-lg font-display font-bold text-white mb-1">{item.title}</h4>
-                    <p className="text-white/40 text-sm">{item.desc}</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-regencyNavy via-regencyNavy/70 to-transparent" />
+
+                    {/* Glassmorphism content card */}
+                    <div className="relative p-6 min-h-[220px] md:min-h-[280px] flex flex-col justify-end">
+                      <div className="p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 group-hover:bg-white/15 transition-all duration-300">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 rounded-lg bg-regencyGold/20 flex items-center justify-center">
+                            <item.icon className="w-5 h-5 text-regencyGold" />
+                          </div>
+                          <h4 className="text-base md:text-lg font-display font-bold text-white">{item.title}</h4>
+                        </div>
+                        <p className="text-white/60 text-sm">{item.desc}</p>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -563,29 +702,49 @@ const MorphingSection = () => {
           </div>
         )}
 
-        {/* STATE 4: CTA */}
+        {/* ===== STATE 4: Final CTA with Premium Feel ===== */}
         {activeState === 4 && (
-          <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
+          <div className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn">
+            {/* Floating image elements */}
+            <div
+              className="absolute left-[5%] top-[20%] w-48 h-64 rounded-2xl overflow-hidden opacity-60 hidden lg:block"
+              style={{ transform: `translateY(${parallaxMedium * 0.1}px) rotate(-6deg)` }}
+            >
+              <img src={IMAGES.medicalLab} alt="" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-regencyNavy/40" />
+            </div>
+            <div
+              className="absolute right-[5%] bottom-[20%] w-40 h-56 rounded-2xl overflow-hidden opacity-60 hidden lg:block"
+              style={{ transform: `translateY(${-parallaxMedium * 0.08}px) rotate(6deg)` }}
+            >
+              <img src={IMAGES.medicalSupplies} alt="" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-regencyNavy/40" />
+            </div>
+
             <div className="text-center max-w-2xl px-6">
-              <RegencyLogo size="large" className="mx-auto mb-8" />
-              <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">
-                Your cargo.<br />
-                <span className="text-regencyGold">Our priority.</span>
-              </h2>
-              <p className="text-white/50 mb-8">Experience the Regency difference.</p>
-              <button className="px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-lg hover:shadow-xl hover:shadow-regencyGold/30 transition-all">
-                Get Started
-              </button>
+              {/* Glassmorphism CTA card */}
+              <div className="p-8 md:p-12 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10">
+                <RegencyLogo size="large" className="mx-auto mb-8" />
+                <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">
+                  Your cargo.<br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold via-yellow-300 to-regencyGold">Our priority.</span>
+                </h2>
+                <p className="text-white/50 mb-8">Experience the Regency difference.</p>
+                <button className="group px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-xl hover:shadow-2xl hover:shadow-regencyGold/40 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 mx-auto">
+                  Get Started Today
+                  <Icons.ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Scroll hint */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
-          <span className="text-white/30 text-[10px] uppercase tracking-[0.2em]">
+        {/* ===== SCROLL HINT ===== */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center z-40">
+          <span className="text-white/40 text-[10px] uppercase tracking-[0.25em]">
             {activeState < 4 ? "Keep scrolling" : "Continue below"}
           </span>
-          <div className="mt-2 w-px h-6 bg-gradient-to-b from-white/20 to-transparent mx-auto" />
+          <div className="mt-2 w-px h-8 bg-gradient-to-b from-white/30 to-transparent mx-auto" />
         </div>
       </div>
     </section>
@@ -631,10 +790,26 @@ const services = [
 ];
 
 const ServicesSection = () => (
-  <section id="services" className="py-20 md:py-32 bg-regencyDark">
-    <div className="max-w-7xl mx-auto px-4 md:px-6">
+  <section id="services" className="py-20 md:py-32 bg-regencyDark relative overflow-hidden">
+    {/* Parallax background elements */}
+    <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute top-20 left-0 w-96 h-96 bg-regencyBlue/10 rounded-full blur-[150px] animate-float" />
+      <div className="absolute bottom-20 right-0 w-80 h-80 bg-regencyGold/10 rounded-full blur-[120px] animate-float-delayed" />
+    </div>
+
+    {/* Subtle grid overlay */}
+    <div className="absolute inset-0 opacity-[0.03]">
+      <svg className="w-full h-full">
+        <pattern id="serviceGrid" width="60" height="60" patternUnits="userSpaceOnUse">
+          <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#CFB53B" strokeWidth="0.5"/>
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#serviceGrid)" />
+      </svg>
+    </div>
+
+    <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
       <div className="services-header text-center mb-16">
-        <span className="inline-block px-4 py-2 rounded-full bg-regencyGold/10 text-regencyGold text-xs tracking-[0.2em] uppercase mb-4 animate-pulse">
+        <span className="inline-block px-4 py-2 rounded-full bg-regencyGold/10 backdrop-blur-sm text-regencyGold text-xs tracking-[0.2em] uppercase mb-4 border border-regencyGold/20">
           Our Capabilities
         </span>
         <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">
@@ -650,16 +825,17 @@ const ServicesSection = () => (
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {services.map((service, index) => (
-          <div key={index} className="service-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 hover:border-regencyGold/50 transition-all duration-500 transform-gpu">
+          <div key={index} className="service-card group relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-regencyGold/50 transition-all duration-500 transform-gpu">
             {/* Card Glow Effect */}
             <div className="card-glow absolute inset-0 opacity-0 pointer-events-none">
               <div className="absolute inset-0 bg-gradient-to-br from-regencyGold/20 via-transparent to-regencyBlue/20 blur-xl" />
             </div>
 
-            {/* Background Image */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-15 transition-opacity duration-700">
+            {/* Background Image with parallax hover */}
+            <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-all duration-700 group-hover:scale-110">
               <img src={service.image} alt="" className="w-full h-full object-cover" />
             </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-regencyDark via-regencyDark/90 to-regencyDark/70" />
 
             {/* Animated border gradient */}
             <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -669,9 +845,9 @@ const ServicesSection = () => (
             </div>
 
             <div className="relative p-6 md:p-8 z-10">
-              {/* Icon with pulse effect */}
-              <div className="w-14 h-14 rounded-xl bg-regencyGold/10 border border-regencyGold/20 flex items-center justify-center text-regencyGold mb-6 group-hover:scale-110 group-hover:bg-regencyGold/20 group-hover:shadow-lg group-hover:shadow-regencyGold/20 transition-all duration-300">
-                <service.icon className="w-7 h-7 group-hover:animate-pulse" />
+              {/* Glassmorphism icon container */}
+              <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-regencyGold mb-6 group-hover:scale-110 group-hover:bg-regencyGold/20 group-hover:shadow-xl group-hover:shadow-regencyGold/20 transition-all duration-300">
+                <service.icon className="w-8 h-8 group-hover:animate-pulse" />
               </div>
 
               {/* Content */}
@@ -681,10 +857,10 @@ const ServicesSection = () => (
               </h3>
               <p className="text-white/50 text-sm leading-relaxed mb-6">{service.description}</p>
 
-              {/* Features with hover effects */}
+              {/* Glassmorphism feature tags */}
               <div className="flex flex-wrap gap-2 mb-6">
                 {service.features.map((feature, i) => (
-                  <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-white/5 text-white/60 border border-white/10 hover:border-regencyGold/30 hover:text-regencyGold hover:bg-regencyGold/5 transition-all duration-300 cursor-default">
+                  <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white/70 border border-white/10 hover:border-regencyGold/40 hover:text-regencyGold hover:bg-regencyGold/10 transition-all duration-300 cursor-default">
                     {feature}
                   </span>
                 ))}
@@ -710,13 +886,17 @@ const StatsSection = () => (
   <section id="metrics" className="py-20 md:py-32 bg-gradient-to-b from-regencyDark via-regencyNavy/50 to-regencyDark relative overflow-hidden">
     {/* Animated background particles */}
     <div className="absolute inset-0 pointer-events-none">
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-regencyBlue/10 rounded-full blur-[100px] animate-float" />
-      <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-regencyGold/10 rounded-full blur-[80px] animate-float-delayed" />
+      <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-regencyBlue/15 rounded-full blur-[120px] animate-float" />
+      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-regencyGold/10 rounded-full blur-[100px] animate-float-delayed" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-regencyBlue/5 rounded-full blur-[150px]" />
     </div>
+
+    {/* Subtle radial gradient overlay */}
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_rgba(10,10,11,0.8)_100%)]" />
 
     <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
       <div className="text-center mb-16">
-        <span className="inline-block px-4 py-2 rounded-full bg-regencyBlue/10 text-regencyBlue text-xs tracking-[0.2em] uppercase mb-4">
+        <span className="inline-block px-4 py-2 rounded-full bg-regencyBlue/10 backdrop-blur-sm text-regencyBlue text-xs tracking-[0.2em] uppercase mb-4 border border-regencyBlue/20">
           By the Numbers
         </span>
         <h2 className="text-3xl md:text-5xl font-display font-bold text-white">
@@ -724,27 +904,34 @@ const StatsSection = () => (
         </h2>
       </div>
 
-      <div id="stats-grid" className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+      <div id="stats-grid" className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         {[
-          { value: 500, suffix: "+", label: "Medical Units", desc: "Active fleet" },
-          { value: 48, suffix: "", label: "States", desc: "Nationwide coverage" },
-          { value: 24, suffix: "/7", label: "Dispatch", desc: "Always available" },
-          { value: 99, suffix: "%", label: "On-Time", desc: "Industry leading" },
+          { value: 500, suffix: "+", label: "Medical Units", desc: "Active fleet", color: "regencyGold" },
+          { value: 48, suffix: "", label: "States", desc: "Nationwide coverage", color: "regencyBlue" },
+          { value: 24, suffix: "/7", label: "Dispatch", desc: "Always available", color: "regencyGold" },
+          { value: 99, suffix: "%", label: "On-Time", desc: "Industry leading", color: "regencyBlue" },
         ].map((stat, i) => (
-          <div key={i} className="stat-item group text-center p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-regencyGold/30 hover:bg-white/8 transition-all duration-500 transform-gpu hover:scale-105">
-            {/* Glow on hover */}
-            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-              <div className="absolute inset-0 bg-gradient-to-br from-regencyGold/10 to-regencyBlue/10 blur-xl" />
+          <div key={i} className="stat-item group relative text-center p-6 md:p-8 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:border-regencyGold/40 transition-all duration-500 transform-gpu hover:scale-105 overflow-hidden">
+            {/* Animated gradient background on hover */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color === 'regencyGold' ? 'from-regencyGold/10' : 'from-regencyBlue/10'} via-transparent to-transparent`} />
             </div>
+
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <div className={`absolute inset-0 ${stat.color === 'regencyGold' ? 'bg-regencyGold/5' : 'bg-regencyBlue/5'} blur-2xl`} />
+            </div>
+
             <div className="relative z-10">
-              <div className="flex items-baseline justify-center gap-1 mb-2">
-                <span className="stat-value text-4xl md:text-5xl font-display font-bold text-white" data-value={stat.value} data-suffix="">
+              {/* Number display with glassmorphism container */}
+              <div className="inline-flex items-baseline justify-center gap-1 mb-3 px-4 py-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+                <span className="stat-value text-3xl md:text-5xl font-display font-bold text-white" data-value={stat.value}>
                   {stat.value}
                 </span>
-                <span className="text-2xl md:text-3xl font-display font-bold text-regencyGold animate-pulse">{stat.suffix}</span>
+                <span className={`text-xl md:text-3xl font-display font-bold ${stat.color === 'regencyGold' ? 'text-regencyGold' : 'text-regencyBlue'}`}>{stat.suffix}</span>
               </div>
-              <span className="text-white font-semibold block group-hover:text-regencyGold transition-colors duration-300">{stat.label}</span>
-              <span className="text-white/40 text-sm">{stat.desc}</span>
+              <span className="text-white font-semibold block group-hover:text-regencyGold transition-colors duration-300 text-sm md:text-base">{stat.label}</span>
+              <span className="text-white/40 text-xs md:text-sm">{stat.desc}</span>
             </div>
           </div>
         ))}
@@ -757,16 +944,22 @@ const StatsSection = () => (
 // ABOUT SECTION
 // ============================================================================
 const AboutSection = () => (
-  <section id="about" className="py-20 md:py-32 bg-regencyDark">
-    <div className="max-w-7xl mx-auto px-4 md:px-6">
+  <section id="about" className="py-20 md:py-32 bg-regencyDark relative overflow-hidden">
+    {/* Parallax background elements */}
+    <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-regencyGold/5 rounded-full blur-[180px]" />
+      <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-regencyBlue/8 rounded-full blur-[150px]" />
+    </div>
+
+    <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
       <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
         <div className="about-content">
-          <span className="inline-block px-4 py-2 rounded-full bg-regencyGold/10 text-regencyGold text-xs tracking-[0.2em] uppercase mb-6">
+          <span className="inline-block px-4 py-2 rounded-full bg-regencyGold/10 backdrop-blur-sm text-regencyGold text-xs tracking-[0.2em] uppercase mb-6 border border-regencyGold/20">
             The Regency Standard
           </span>
           <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-6">
             Logistics Without<br />
-            <span className="text-white/40">The Guessing Game</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white/60 to-white/30">The Guessing Game</span>
           </h2>
           <div className="space-y-4 text-white/60 leading-relaxed">
             <p>
@@ -779,33 +972,56 @@ const AboutSection = () => (
             </p>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-4">
+          {/* Glassmorphism feature grid */}
+          <div className="mt-8 grid grid-cols-2 gap-3">
             {[
               { icon: Icons.Shield, text: "HIPAA Compliant" },
               { icon: Icons.Thermometer, text: "Cold Chain" },
               { icon: Icons.Clock, text: "Real-Time Tracking" },
               { icon: Icons.Medical, text: "FDA Registered" },
             ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3 text-white/70">
-                <item.icon className="w-5 h-5 text-regencyGold flex-shrink-0" />
-                <span className="text-sm">{item.text}</span>
+              <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-regencyGold/30 hover:bg-white/8 transition-all duration-300 group">
+                <div className="w-8 h-8 rounded-lg bg-regencyGold/10 flex items-center justify-center group-hover:bg-regencyGold/20 transition-colors">
+                  <item.icon className="w-4 h-4 text-regencyGold" />
+                </div>
+                <span className="text-sm text-white/80 group-hover:text-white transition-colors">{item.text}</span>
               </div>
             ))}
           </div>
 
-          <button className="mt-8 px-6 py-3 border border-regencyGold text-regencyGold font-semibold text-sm uppercase tracking-wider rounded-lg hover:bg-regencyGold hover:text-regencyNavy transition-all duration-300">
+          <button className="mt-8 px-6 py-3 bg-white/5 backdrop-blur-sm border border-regencyGold/50 text-regencyGold font-semibold text-sm uppercase tracking-wider rounded-xl hover:bg-regencyGold hover:text-regencyNavy hover:shadow-xl hover:shadow-regencyGold/20 transition-all duration-300">
             Our Technology
           </button>
         </div>
 
         <div className="about-image relative">
-          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden">
-            <img src={IMAGES.about} alt="Medical Logistics" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-regencyDark via-transparent to-transparent" />
+          {/* Main image with parallax frame */}
+          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden group">
+            <img src={IMAGES.about} alt="Medical Logistics" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-gradient-to-t from-regencyDark via-regencyDark/30 to-transparent" />
+
+            {/* Decorative frame elements */}
+            <div className="absolute top-4 left-4 w-16 h-16 border-l-2 border-t-2 border-regencyGold/40" />
+            <div className="absolute bottom-4 right-4 w-16 h-16 border-r-2 border-b-2 border-regencyGold/40" />
           </div>
-          <div className="absolute -bottom-6 -left-6 p-6 rounded-xl bg-regencyNavy/90 backdrop-blur-sm border border-white/10 max-w-[200px] hidden md:block">
-            <p className="font-display font-bold text-white text-lg">"Precision in every mile."</p>
-            <p className="text-white/50 text-sm mt-1">— Regency Xpress</p>
+
+          {/* Floating glassmorphism card */}
+          <div className="absolute -bottom-6 -left-6 p-5 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 max-w-[220px] hidden md:block shadow-xl">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-regencyGold/20 flex items-center justify-center">
+                <Icons.Shield className="w-5 h-5 text-regencyGold" />
+              </div>
+              <div>
+                <p className="font-display font-bold text-white text-base">99.9%</p>
+                <p className="text-white/50 text-xs">On-Time Delivery</p>
+              </div>
+            </div>
+            <p className="text-white/60 text-sm italic">"Precision in every mile."</p>
+          </div>
+
+          {/* Secondary floating element */}
+          <div className="absolute -top-4 -right-4 p-3 rounded-xl bg-regencyGold/10 backdrop-blur-md border border-regencyGold/30 hidden lg:block">
+            <Icons.Van className="w-6 h-6 text-regencyGold" />
           </div>
         </div>
       </div>
