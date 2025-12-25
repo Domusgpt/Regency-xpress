@@ -407,56 +407,15 @@ const MarqueeSection = () => (
 // ============================================================================
 // MORPHING EXPERIENCE SECTION - 800vh Scroll-Locked Transformation
 // ============================================================================
-const morphingStates = [
-  {
-    id: 1,
-    question: "From Runway to Recovery",
-    subtext: "Airport to patient. No delays. No excuses.",
-    bgColor: "from-regencyNavy via-regencyDark to-regencyNavy",
-  },
-  {
-    id: 2,
-    pillars: [
-      { title: "Direct Routes", desc: "Airport pickup to final mile" },
-      { title: "Chain of Custody", desc: "Documented every step" },
-      { title: "Temperature Control", desc: "Maintained in transit" },
-      { title: "Priority Handling", desc: "Medical cargo first" },
-    ],
-    bgColor: "from-regencyDark via-regencyNavy to-regencyDark",
-  },
-  {
-    id: 3,
-    philosophy: "When it lands, we're already there.",
-    author: "The Regency Promise",
-    bgColor: "from-regencyNavy via-regencyBlue/20 to-regencyNavy",
-  },
-  {
-    id: 4,
-    features: [
-      { icon: "✈️", label: "Airport Coordination", desc: "Tarmac-ready teams" },
-      { icon: "🏥", label: "Hospital Delivery", desc: "Direct to facility" },
-      { icon: "📍", label: "Live Tracking", desc: "Real-time visibility" },
-      { icon: "📋", label: "Compliance", desc: "Full documentation" },
-    ],
-    bgColor: "from-regencyDark via-regencyNavy to-regencyDark",
-  },
-  {
-    id: 5,
-    cta: true,
-    headline: "Your cargo. Our priority.",
-    bgColor: "from-regencyNavy via-regencyBlue/30 to-regencyNavy",
-  },
-];
-
 const MorphingSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [activeState, setActiveState] = useState(1);
+  const [activeState, setActiveState] = useState(0);
 
   useLayoutEffect(() => {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Create scroll trigger for the entire section
+      // Main scroll trigger
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top top",
@@ -465,186 +424,168 @@ const MorphingSection = () => {
         pinSpacing: false,
         onUpdate: (self) => {
           const progress = self.progress;
-          const newState = Math.min(5, Math.floor(progress * 5) + 1);
+          // 5 states: 0-20%, 20-40%, 40-60%, 60-80%, 80-100%
+          const newState = Math.min(4, Math.floor(progress * 5));
           setActiveState(newState);
         },
       });
-
-      // Animate state transitions
-      for (let i = 1; i <= 5; i++) {
-        const startProgress = (i - 1) / 5;
-        const endProgress = i / 5;
-
-        ScrollTrigger.create({
-          trigger: sectionRef.current,
-          start: `${startProgress * 100}% top`,
-          end: `${endProgress * 100}% top`,
-          onEnter: () => {
-            gsap.to(`.morph-state-${i}`, {
-              opacity: 1,
-              scale: 1,
-              duration: 0.6,
-              ease: "power2.out",
-            });
-          },
-          onLeave: () => {
-            gsap.to(`.morph-state-${i}`, {
-              opacity: 0,
-              scale: 0.95,
-              duration: 0.4,
-            });
-          },
-          onEnterBack: () => {
-            gsap.to(`.morph-state-${i}`, {
-              opacity: 1,
-              scale: 1,
-              duration: 0.6,
-            });
-          },
-          onLeaveBack: () => {
-            gsap.to(`.morph-state-${i}`, {
-              opacity: 0,
-              scale: 0.95,
-              duration: 0.4,
-            });
-          },
-        });
-      }
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
+  // Background colors for each state
+  const bgColors = [
+    "bg-regencyNavy",
+    "bg-regencyDark",
+    "bg-regencyNavy",
+    "bg-regencyDark",
+    "bg-regencyNavy",
+  ];
+
   return (
     <section ref={sectionRef} id="morphing-section" className="relative" style={{ height: "800vh" }}>
-      {/* Fixed viewport */}
-      <div className="morphing-viewport h-screen w-full overflow-hidden sticky top-0">
-        {/* Background transitions */}
-        <div className={`absolute inset-0 bg-gradient-to-b ${morphingStates[activeState - 1]?.bgColor || morphingStates[0].bgColor} transition-all duration-1000`} />
+      <div className={`morphing-viewport h-screen w-full overflow-hidden sticky top-0 ${bgColors[activeState]} transition-colors duration-700`}>
 
-        {/* Animated orbs */}
+        {/* Animated background orbs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div
             className="absolute w-96 h-96 rounded-full blur-[150px] transition-all duration-1000"
             style={{
-              background: activeState % 2 === 0 ? "rgba(207,181,59,0.15)" : "rgba(43,80,145,0.2)",
-              top: `${20 + activeState * 10}%`,
-              left: `${10 + activeState * 5}%`,
+              background: activeState % 2 === 0 ? "rgba(43,80,145,0.2)" : "rgba(207,181,59,0.15)",
+              top: "20%",
+              left: "10%",
+              transform: `translate(${activeState * 20}px, ${activeState * 30}px)`,
             }}
           />
           <div
             className="absolute w-72 h-72 rounded-full blur-[120px] transition-all duration-1000"
             style={{
-              background: activeState % 2 === 0 ? "rgba(43,80,145,0.2)" : "rgba(207,181,59,0.15)",
-              bottom: `${20 + activeState * 5}%`,
-              right: `${10 + activeState * 8}%`,
+              background: activeState % 2 === 0 ? "rgba(207,181,59,0.15)" : "rgba(43,80,145,0.2)",
+              bottom: "20%",
+              right: "10%",
+              transform: `translate(${-activeState * 15}px, ${-activeState * 20}px)`,
             }}
           />
         </div>
 
-        {/* Progress indicator */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
-          {[1, 2, 3, 4, 5].map((state) => (
+        {/* Progress dots */}
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
+          {[0, 1, 2, 3, 4].map((i) => (
             <div
-              key={state}
+              key={i}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                activeState >= state ? "bg-regencyGold scale-125" : "bg-white/30"
+                activeState === i ? "bg-regencyGold scale-150" : activeState > i ? "bg-regencyGold/60" : "bg-white/30"
               }`}
             />
           ))}
         </div>
 
-        {/* State 1: Question */}
-        <div className={`morph-state-1 absolute inset-0 flex items-center justify-center transition-all duration-500 ${activeState === 1 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-          <div className="text-center max-w-4xl px-6">
-            <div className="w-32 h-32 mx-auto mb-8 rounded-full bg-regencyGold/20 flex items-center justify-center">
-              <div className="w-20 h-20 rounded-full bg-regencyGold/30 animate-pulse flex items-center justify-center">
-                <span className="text-4xl">?</span>
+        {/* STATE 0: Opening Question */}
+        {activeState === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
+            <div className="text-center max-w-4xl px-6">
+              <div className="w-24 h-24 mx-auto mb-8 rounded-full border-2 border-regencyGold/30 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-regencyGold/20 flex items-center justify-center">
+                  <Icons.Van className="w-8 h-8 text-regencyGold" />
+                </div>
+              </div>
+              <h2 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6">
+                From Runway<br />
+                <span className="text-regencyGold">to Recovery</span>
+              </h2>
+              <p className="text-xl md:text-2xl text-white/50">Airport to patient. No delays. No excuses.</p>
+            </div>
+          </div>
+        )}
+
+        {/* STATE 1: Four Pillars */}
+        {activeState === 1 && (
+          <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
+            <div className="max-w-5xl mx-auto px-6">
+              <h3 className="text-center text-xs text-regencyGold tracking-[0.3em] uppercase mb-10">Our Pillars</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {[
+                  { num: "01", title: "Direct Routes", desc: "Airport to final mile" },
+                  { num: "02", title: "Chain of Custody", desc: "Documented every step" },
+                  { num: "03", title: "Temp Control", desc: "Maintained in transit" },
+                  { num: "04", title: "Priority", desc: "Medical cargo first" },
+                ].map((item, i) => (
+                  <div key={i} className="p-6 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-regencyGold/50 text-xs font-mono">{item.num}</span>
+                    <h4 className="text-lg md:text-xl font-display font-bold text-white mt-2 mb-1">{item.title}</h4>
+                    <p className="text-white/40 text-sm">{item.desc}</p>
+                  </div>
+                ))}
               </div>
             </div>
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6">
-              {morphingStates[0].question}
-            </h2>
-            <p className="text-xl md:text-2xl text-white/50">{morphingStates[0].subtext}</p>
           </div>
-        </div>
+        )}
 
-        {/* State 2: Four Pillars */}
-        <div className={`morph-state-2 absolute inset-0 flex items-center justify-center transition-all duration-500 ${activeState === 2 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {morphingStates[1].pillars?.map((pillar, i) => (
-                <div
-                  key={i}
-                  className="group p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:border-regencyGold/50 transition-all duration-500 hover:scale-105"
-                  style={{ animationDelay: `${i * 0.1}s` }}
-                >
-                  <div className="w-16 h-16 mb-6 rounded-xl bg-regencyGold/20 flex items-center justify-center">
-                    <span className="text-2xl font-bold text-regencyGold">{i + 1}</span>
+        {/* STATE 2: Philosophy Quote */}
+        {activeState === 2 && (
+          <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
+            <div className="text-center max-w-3xl px-6">
+              <div className="relative py-12">
+                <span className="absolute top-0 left-0 text-8xl md:text-9xl font-display text-regencyGold/20 leading-none">"</span>
+                <p className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-white leading-tight px-8">
+                  When it lands, we're already there.
+                </p>
+                <span className="absolute bottom-0 right-0 text-8xl md:text-9xl font-display text-regencyGold/20 leading-none rotate-180">"</span>
+              </div>
+              <p className="mt-8 text-regencyGold text-sm tracking-[0.2em] uppercase">— The Regency Promise</p>
+            </div>
+          </div>
+        )}
+
+        {/* STATE 3: The Journey */}
+        {activeState === 3 && (
+          <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
+            <div className="max-w-4xl mx-auto px-6">
+              <h3 className="text-center text-xs text-regencyGold tracking-[0.3em] uppercase mb-10">The Full Journey</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { icon: Icons.Globe, title: "Airport Coordination", desc: "Tarmac-ready teams" },
+                  { icon: Icons.Medical, title: "Hospital Delivery", desc: "Direct to facility" },
+                  { icon: Icons.MapPin, title: "Live Tracking", desc: "Real-time visibility" },
+                  { icon: Icons.Shield, title: "Compliance", desc: "Full documentation" },
+                ].map((item, i) => (
+                  <div key={i} className="p-6 rounded-xl bg-white/5 border border-white/10 text-center">
+                    <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-regencyBlue/20 flex items-center justify-center">
+                      <item.icon className="w-6 h-6 text-regencyBlue" />
+                    </div>
+                    <h4 className="text-base md:text-lg font-display font-bold text-white mb-1">{item.title}</h4>
+                    <p className="text-white/40 text-sm">{item.desc}</p>
                   </div>
-                  <h3 className="text-2xl font-display font-bold text-white mb-2 group-hover:text-regencyGold transition-colors">
-                    {pillar.title}
-                  </h3>
-                  <p className="text-white/50 text-sm">{pillar.desc}</p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* State 3: Philosophy */}
-        <div className={`morph-state-3 absolute inset-0 flex items-center justify-center transition-all duration-500 ${activeState === 3 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-          <div className="text-center max-w-4xl px-6">
-            <div className="relative">
-              <span className="absolute -top-16 -left-8 text-[200px] font-display text-regencyGold/10 select-none">"</span>
-              <p className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-tight relative z-10">
-                {morphingStates[2].philosophy}
-              </p>
-              <span className="absolute -bottom-24 -right-8 text-[200px] font-display text-regencyGold/10 select-none rotate-180">"</span>
-            </div>
-            <p className="mt-12 text-regencyGold text-lg tracking-widest uppercase">— {morphingStates[2].author}</p>
-          </div>
-        </div>
-
-        {/* State 4: Airport to Patient Features */}
-        <div className={`morph-state-4 absolute inset-0 flex items-center justify-center transition-all duration-500 ${activeState === 4 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-          <div className="max-w-5xl mx-auto px-6">
-            <h3 className="text-center text-sm text-regencyGold tracking-[0.3em] uppercase mb-12">The Full Journey</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {morphingStates[3].features?.map((item, i) => (
-                <div
-                  key={i}
-                  className="group text-center p-6 rounded-2xl bg-gradient-to-b from-white/10 to-white/5 border border-white/10 hover:border-regencyGold/30 transition-all duration-300 hover:scale-105"
-                >
-                  <div className="text-4xl mb-4">{item.icon}</div>
-                  <div className="text-lg font-display font-bold text-white mb-1 group-hover:text-regencyGold transition-colors">{item.label}</div>
-                  <div className="text-white/50 text-sm">{item.desc}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* State 5: CTA Transition */}
-        <div className={`morph-state-5 absolute inset-0 flex items-center justify-center transition-all duration-500 ${activeState === 5 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-          <div className="text-center max-w-3xl px-6">
-            <RegencyLogo size="large" className="mx-auto mb-8" />
-            <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-6">
-              {morphingStates[4].headline}
-            </h2>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <button className="group px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-lg hover:shadow-xl hover:shadow-regencyGold/40 transition-all flex items-center justify-center gap-3">
+        {/* STATE 4: CTA */}
+        {activeState === 4 && (
+          <div className="absolute inset-0 flex items-center justify-center animate-fadeIn">
+            <div className="text-center max-w-2xl px-6">
+              <RegencyLogo size="large" className="mx-auto mb-8" />
+              <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">
+                Your cargo.<br />
+                <span className="text-regencyGold">Our priority.</span>
+              </h2>
+              <p className="text-white/50 mb-8">Experience the Regency difference.</p>
+              <button className="px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-lg hover:shadow-xl hover:shadow-regencyGold/30 transition-all">
                 Get Started
-                <Icons.ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Scroll hint */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center">
-          <span className="text-white/30 text-xs uppercase tracking-widest">Keep scrolling</span>
-          <div className="mt-2 w-px h-8 bg-gradient-to-b from-white/30 to-transparent mx-auto" />
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
+          <span className="text-white/30 text-[10px] uppercase tracking-[0.2em]">
+            {activeState < 4 ? "Keep scrolling" : "Continue below"}
+          </span>
+          <div className="mt-2 w-px h-6 bg-gradient-to-b from-white/20 to-transparent mx-auto" />
         </div>
       </div>
     </section>
