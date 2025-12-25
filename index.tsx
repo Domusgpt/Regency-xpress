@@ -105,7 +105,7 @@ const Icons = {
 };
 
 // ============================================================================
-// LOGO COMPONENT - Uses actual PNG logo with "SERVICES" text overlay
+// LOGO COMPONENT - Uses actual PNG logo
 // ============================================================================
 type LogoSize = "small" | "default" | "large" | "hero";
 
@@ -123,42 +123,13 @@ const RegencyLogo = ({
     hero: "w-72 md:w-96 lg:w-[28rem]"
   };
 
-  const textSizes: Record<LogoSize, string> = {
-    small: "text-[6px] md:text-[7px] tracking-[0.25em]",
-    default: "text-[8px] md:text-[9px] tracking-[0.3em]",
-    large: "text-[10px] md:text-[12px] tracking-[0.35em]",
-    hero: "text-[12px] md:text-[14px] lg:text-[16px] tracking-[0.4em]"
-  };
-
   return (
     <div className={`${sizeClasses[size]} ${className}`}>
-      <div className="relative">
-        {/* PNG Logo - cropped to hide "LOGISTICS" text */}
-        <div className="overflow-hidden" style={{ paddingBottom: '0%' }}>
-          <img
-            src={LOGO_URL}
-            alt="Regency Xpress Services"
-            className="w-full h-auto object-contain object-top drop-shadow-lg"
-            style={{
-              clipPath: 'inset(0 0 12% 0)',
-              marginBottom: '-12%'
-            }}
-          />
-        </div>
-        {/* "SERVICES" text overlay in matching gold color */}
-        <div className="w-full text-center" style={{ marginTop: '-2%' }}>
-          <span
-            className={`font-sans font-normal uppercase ${textSizes[size]}`}
-            style={{
-              color: '#CFB53B',
-              letterSpacing: '0.35em',
-              textShadow: '0 1px 2px rgba(0,0,0,0.3)'
-            }}
-          >
-            SERVICES
-          </span>
-        </div>
-      </div>
+      <img
+        src={LOGO_URL}
+        alt="Regency Xpress Logistics"
+        className="w-full h-auto object-contain drop-shadow-lg"
+      />
     </div>
   );
 };
