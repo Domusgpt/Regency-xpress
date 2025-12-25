@@ -105,7 +105,7 @@ const Icons = {
 };
 
 // ============================================================================
-// LOGO COMPONENT - Uses actual PNG logo
+// LOGO COMPONENT - Uses actual PNG logo with "SERVICES" text overlay
 // ============================================================================
 type LogoSize = "small" | "default" | "large" | "hero";
 
@@ -123,13 +123,42 @@ const RegencyLogo = ({
     hero: "w-72 md:w-96 lg:w-[28rem]"
   };
 
+  const textSizes: Record<LogoSize, string> = {
+    small: "text-[6px] md:text-[7px] tracking-[0.25em]",
+    default: "text-[8px] md:text-[9px] tracking-[0.3em]",
+    large: "text-[10px] md:text-[12px] tracking-[0.35em]",
+    hero: "text-[12px] md:text-[14px] lg:text-[16px] tracking-[0.4em]"
+  };
+
   return (
     <div className={`${sizeClasses[size]} ${className}`}>
-      <img
-        src={LOGO_URL}
-        alt="Regency Xpress Logistics"
-        className="w-full h-auto object-contain drop-shadow-lg"
-      />
+      <div className="relative">
+        {/* PNG Logo - cropped to hide "LOGISTICS" text */}
+        <div className="overflow-hidden" style={{ paddingBottom: '0%' }}>
+          <img
+            src={LOGO_URL}
+            alt="Regency Xpress Services"
+            className="w-full h-auto object-contain object-top drop-shadow-lg"
+            style={{
+              clipPath: 'inset(0 0 12% 0)',
+              marginBottom: '-12%'
+            }}
+          />
+        </div>
+        {/* "SERVICES" text overlay in matching gold color */}
+        <div className="w-full text-center" style={{ marginTop: '-2%' }}>
+          <span
+            className={`font-sans font-normal uppercase ${textSizes[size]}`}
+            style={{
+              color: '#CFB53B',
+              letterSpacing: '0.35em',
+              textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+            }}
+          >
+            SERVICES
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
@@ -352,12 +381,16 @@ const MarqueeSection = () => (
 );
 
 // ============================================================================
-// MORPHING EXPERIENCE SECTION - 800vh Scroll-Locked with Parallax & Images
+// MORPHING EXPERIENCE SECTION - 800vh Scroll-Locked with Smooth Transitions
 // ============================================================================
 const MorphingSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [activeState, setActiveState] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [stateProgress, setStateProgress] = useState(0); // Progress within current state (0-1)
+  const [tension, setTension] = useState(0); // Tension level (0-1) as approaching next state
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const prevStateRef = useRef(0);
 
   useLayoutEffect(() => {
     if (!sectionRef.current) return;
@@ -372,7 +405,30 @@ const MorphingSection = () => {
         onUpdate: (self) => {
           const progress = self.progress;
           setScrollProgress(progress);
-          const newState = Math.min(4, Math.floor(progress * 5));
+
+          // Calculate which state we're in and progress within that state
+          const stateFloat = progress * 5;
+          const newState = Math.min(4, Math.floor(stateFloat));
+          const progressInState = stateFloat - newState; // 0 to 1 within current state
+
+          setStateProgress(progressInState);
+
+          // Calculate tension - builds up in the last 30% of each state
+          const tensionThreshold = 0.7;
+          if (progressInState > tensionThreshold && newState < 4) {
+            const tensionAmount = (progressInState - tensionThreshold) / (1 - tensionThreshold);
+            setTension(tensionAmount);
+          } else {
+            setTension(0);
+          }
+
+          // Detect state transition
+          if (newState !== prevStateRef.current) {
+            setIsTransitioning(true);
+            setTimeout(() => setIsTransitioning(false), 600);
+            prevStateRef.current = newState;
+          }
+
           setActiveState(newState);
         },
       });
@@ -395,33 +451,112 @@ const MorphingSection = () => {
     IMAGES.medicalSupplies,
   ];
 
+  // Calculate smooth opacity for each background layer
+  const getLayerOpacity = (layerIndex: number) => {
+    const stateFloat = scrollProgress * 5;
+
+    // Current state is fully visible at start, fades out at end
+    if (layerIndex === activeState) {
+      // Start fading when we're 60% through the state
+      if (stateProgress > 0.6 && activeState < 4) {
+        return 1 - ((stateProgress - 0.6) / 0.4) * 0.5; // Fade from 1 to 0.5
+      }
+      return 1;
+    }
+
+    // Next state fades in during the last 40% of current state
+    if (layerIndex === activeState + 1 && activeState < 4) {
+      if (stateProgress > 0.6) {
+        return ((stateProgress - 0.6) / 0.4) * 0.6; // Fade from 0 to 0.6
+      }
+      return 0;
+    }
+
+    // Previous state lingers slightly
+    if (layerIndex === activeState - 1 && stateProgress < 0.3) {
+      return (0.3 - stateProgress) / 0.3 * 0.3; // Fade from 0.3 to 0
+    }
+
+    return 0;
+  };
+
+  // Calculate the brightness/filter for tension effect
+  const getTensionFilter = (layerIndex: number) => {
+    if (layerIndex === activeState) {
+      const baseBrightness = 0.3;
+      const tensionBrightness = baseBrightness - (tension * 0.1); // Gets darker as tension builds
+      return `brightness(${tensionBrightness}) saturate(${0.8 + tension * 0.3})`;
+    }
+    if (layerIndex === activeState + 1) {
+      const brightness = 0.3 + (tension * 0.15); // Gets brighter as it approaches
+      return `brightness(${brightness}) saturate(${0.8 + tension * 0.2})`;
+    }
+    return "brightness(0.3) saturate(0.8)";
+  };
+
   return (
     <section ref={sectionRef} id="morphing-section" className="relative" style={{ height: "800vh" }}>
       <div className="morphing-viewport h-screen w-full overflow-hidden sticky top-0 bg-regencyNavy">
 
-        {/* ===== PARALLAX BACKGROUND LAYERS ===== */}
+        {/* ===== SMOOTH CROSSFADING BACKGROUND LAYERS ===== */}
         {stateImages.map((img, i) => (
           <div
             key={i}
-            className="absolute inset-0 transition-opacity duration-1000"
+            className="absolute inset-0"
             style={{
-              opacity: activeState === i ? 1 : 0,
-              transform: `translateY(${(scrollProgress - i * 0.2) * -50}px) scale(${1.1 + scrollProgress * 0.1})`,
+              opacity: getLayerOpacity(i),
+              transform: `translateY(${(scrollProgress - i * 0.2) * -50}px) scale(${1.1 + scrollProgress * 0.1 + (i === activeState + 1 ? tension * 0.05 : 0)})`,
+              transition: 'opacity 0.15s ease-out',
+              zIndex: i === activeState ? 2 : i === activeState + 1 ? 1 : 0,
             }}
           >
             <img
               src={img}
               alt=""
               loading="lazy"
-              className="w-full h-full object-cover"
-              style={{ filter: "brightness(0.3) saturate(0.8)" }}
+              className="w-full h-full object-cover transition-all duration-300"
+              style={{ filter: getTensionFilter(i) }}
             />
           </div>
         ))}
 
+        {/* ===== TENSION VIGNETTE OVERLAY ===== */}
+        <div
+          className="absolute inset-0 pointer-events-none z-[5] transition-opacity duration-200"
+          style={{
+            background: `radial-gradient(ellipse at center, transparent 30%, rgba(11,18,33,${0.3 + tension * 0.4}) 100%)`,
+            opacity: tension > 0 ? 1 : 0,
+          }}
+        />
+
+        {/* ===== TRANSITION FLASH EFFECT ===== */}
+        <div
+          className="absolute inset-0 pointer-events-none z-[6] transition-opacity duration-300"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(207,181,59,0.15) 0%, transparent 70%)',
+            opacity: isTransitioning ? 1 : 0,
+          }}
+        />
+
         {/* ===== GRADIENT OVERLAYS ===== */}
         <div className="absolute inset-0 bg-gradient-to-b from-regencyNavy/80 via-transparent to-regencyNavy/90 z-10" />
         <div className="absolute inset-0 bg-gradient-to-r from-regencyNavy/60 via-transparent to-regencyNavy/60 z-10" />
+
+        {/* ===== TENSION PULSE RING ===== */}
+        {tension > 0.3 && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[15]">
+            <div
+              className="rounded-full border-2 border-regencyGold/30"
+              style={{
+                width: `${200 + tension * 400}px`,
+                height: `${200 + tension * 400}px`,
+                opacity: tension * 0.5,
+                transform: `scale(${1 + tension * 0.3})`,
+                transition: 'all 0.2s ease-out',
+              }}
+            />
+          </div>
+        )}
 
         {/* ===== FLOATING PARALLAX ELEMENTS ===== */}
         <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
@@ -429,30 +564,31 @@ const MorphingSection = () => {
           <div
             className="absolute w-[600px] h-[600px] rounded-full blur-[200px] transition-all duration-500"
             style={{
-              background: `radial-gradient(circle, rgba(43,80,145,0.4) 0%, transparent 70%)`,
+              background: `radial-gradient(circle, rgba(43,80,145,${0.4 + tension * 0.2}) 0%, transparent 70%)`,
               top: "10%",
               left: "-10%",
-              transform: `translate(${parallaxSlow * 0.5}px, ${parallaxSlow * 0.3}px)`,
+              transform: `translate(${parallaxSlow * 0.5}px, ${parallaxSlow * 0.3}px) scale(${1 + tension * 0.1})`,
             }}
           />
           <div
             className="absolute w-[500px] h-[500px] rounded-full blur-[180px] transition-all duration-500"
             style={{
-              background: `radial-gradient(circle, rgba(207,181,59,0.3) 0%, transparent 70%)`,
+              background: `radial-gradient(circle, rgba(207,181,59,${0.3 + tension * 0.3}) 0%, transparent 70%)`,
               bottom: "5%",
               right: "-5%",
-              transform: `translate(${-parallaxSlow * 0.4}px, ${-parallaxSlow * 0.2}px)`,
+              transform: `translate(${-parallaxSlow * 0.4}px, ${-parallaxSlow * 0.2}px) scale(${1 + tension * 0.15})`,
             }}
           />
 
-          {/* Medium layer - geometric shapes */}
+          {/* Medium layer - geometric shapes with tension rotation */}
           <div
             className="absolute w-32 h-32 border border-regencyGold/20 rotate-45"
             style={{
               top: "20%",
               right: "15%",
-              transform: `translate(${-parallaxMedium * 0.3}px, ${parallaxMedium * 0.2}px) rotate(${45 + scrollProgress * 90}deg)`,
-              opacity: 0.6,
+              transform: `translate(${-parallaxMedium * 0.3}px, ${parallaxMedium * 0.2}px) rotate(${45 + scrollProgress * 90 + tension * 45}deg)`,
+              opacity: 0.6 + tension * 0.3,
+              borderColor: `rgba(207,181,59,${0.2 + tension * 0.4})`,
             }}
           />
           <div
@@ -460,40 +596,98 @@ const MorphingSection = () => {
             style={{
               bottom: "30%",
               left: "10%",
-              transform: `translate(${parallaxMedium * 0.25}px, ${-parallaxMedium * 0.15}px) rotate(${scrollProgress * 60}deg)`,
-              opacity: 0.5,
+              transform: `translate(${parallaxMedium * 0.25}px, ${-parallaxMedium * 0.15}px) rotate(${scrollProgress * 60 + tension * 30}deg)`,
+              opacity: 0.5 + tension * 0.3,
             }}
           />
 
-          {/* Fast layer - small accent dots */}
+          {/* Fast layer - small accent dots with pulse on tension */}
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-2 h-2 rounded-full bg-regencyGold/40"
+              className="absolute w-2 h-2 rounded-full transition-all duration-200"
               style={{
+                backgroundColor: `rgba(207,181,59,${0.4 + tension * 0.4})`,
                 top: `${15 + i * 15}%`,
                 left: `${10 + i * 15}%`,
-                transform: `translate(${parallaxFast * (0.1 + i * 0.05)}px, ${parallaxFast * (0.08 - i * 0.02)}px)`,
+                transform: `translate(${parallaxFast * (0.1 + i * 0.05)}px, ${parallaxFast * (0.08 - i * 0.02)}px) scale(${1 + tension * 0.5})`,
+                boxShadow: tension > 0.5 ? `0 0 ${10 + tension * 10}px rgba(207,181,59,${tension * 0.5})` : 'none',
               }}
             />
           ))}
         </div>
 
-        {/* ===== PROGRESS INDICATOR ===== */}
+        {/* ===== ENHANCED PROGRESS INDICATOR ===== */}
         <div className="absolute right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
           {[0, 1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                activeState === i ? "bg-regencyGold scale-150 shadow-lg shadow-regencyGold/50" : activeState > i ? "bg-regencyGold/60" : "bg-white/30"
-              }`}
-            />
+            <div key={i} className="relative">
+              {/* Background dot */}
+              <div
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  activeState === i
+                    ? "bg-regencyGold scale-150 shadow-lg shadow-regencyGold/50"
+                    : activeState > i
+                      ? "bg-regencyGold/60"
+                      : "bg-white/30"
+                }`}
+              />
+              {/* Progress fill for current state */}
+              {activeState === i && (
+                <div
+                  className="absolute left-full ml-2 top-1/2 -translate-y-1/2 w-12 h-1 bg-white/10 rounded-full overflow-hidden"
+                >
+                  <div
+                    className="h-full bg-regencyGold rounded-full transition-all duration-100"
+                    style={{
+                      width: `${stateProgress * 100}%`,
+                      boxShadow: tension > 0 ? `0 0 10px rgba(207,181,59,${tension})` : 'none'
+                    }}
+                  />
+                </div>
+              )}
+              {/* Tension indicator for next state */}
+              {i === activeState + 1 && tension > 0 && (
+                <div
+                  className="absolute inset-0 rounded-full transition-all duration-200"
+                  style={{
+                    boxShadow: `0 0 ${5 + tension * 15}px rgba(207,181,59,${tension * 0.6})`,
+                    transform: `scale(${1 + tension * 0.5})`,
+                  }}
+                />
+              )}
+            </div>
           ))}
+        </div>
+
+        {/* ===== SCROLL MOMENTUM INDICATOR ===== */}
+        <div className="absolute left-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col items-center gap-2">
+          <div
+            className="w-1 h-24 bg-white/10 rounded-full overflow-hidden"
+            style={{ transform: `scaleY(${1 + tension * 0.3})` }}
+          >
+            <div
+              className="w-full bg-gradient-to-b from-regencyGold to-regencyGold/50 rounded-full transition-all duration-100"
+              style={{
+                height: `${scrollProgress * 100}%`,
+                boxShadow: tension > 0.3 ? `0 0 15px rgba(207,181,59,${tension * 0.8})` : 'none'
+              }}
+            />
+          </div>
+          <span className="text-[10px] text-white/40 font-mono">
+            {Math.round(scrollProgress * 100)}%
+          </span>
         </div>
 
         {/* ===== STATE 0: Hero Opening ===== */}
         {activeState === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn">
+          <div
+            className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn"
+            style={{
+              opacity: stateProgress > 0.7 ? 1 - ((stateProgress - 0.7) / 0.3) * 0.4 : 1,
+              transform: `scale(${1 - tension * 0.05}) translateY(${tension * -20}px)`,
+              transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
+            }}
+          >
             {/* Parallax image inset */}
             <div
               className="absolute right-[5%] top-1/2 -translate-y-1/2 w-[40%] max-w-md aspect-[3/4] rounded-2xl overflow-hidden hidden lg:block"
@@ -525,7 +719,14 @@ const MorphingSection = () => {
 
         {/* ===== STATE 1: Four Pillars with Image Cards ===== */}
         {activeState === 1 && (
-          <div className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn">
+          <div
+            className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn"
+            style={{
+              opacity: stateProgress > 0.7 ? 1 - ((stateProgress - 0.7) / 0.3) * 0.4 : 1,
+              transform: `scale(${1 - tension * 0.05}) translateY(${tension * -20}px)`,
+              transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
+            }}
+          >
             <div className="max-w-6xl mx-auto px-6 w-full">
               <h3 className="text-center text-xs text-regencyGold tracking-[0.3em] uppercase mb-10">Our Pillars</h3>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
@@ -539,7 +740,8 @@ const MorphingSection = () => {
                     key={i}
                     className="group relative rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 hover:border-regencyGold/40 transition-all duration-500"
                     style={{
-                      transform: `translateY(${(parallaxMedium * 0.05) * (i % 2 === 0 ? 1 : -1)}px)`,
+                      transform: `translateY(${(parallaxMedium * 0.05) * (i % 2 === 0 ? 1 : -1)}px) scale(${1 + tension * 0.02 * (i % 2 === 0 ? 1 : -1)})`,
+                      borderColor: tension > 0.5 ? `rgba(207,181,59,${tension * 0.3})` : undefined,
                     }}
                   >
                     {/* Background image */}
@@ -563,18 +765,31 @@ const MorphingSection = () => {
 
         {/* ===== STATE 2: Philosophy with Cinematic Background ===== */}
         {activeState === 2 && (
-          <div className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn">
+          <div
+            className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn"
+            style={{
+              opacity: stateProgress > 0.7 ? 1 - ((stateProgress - 0.7) / 0.3) * 0.4 : 1,
+              transform: `scale(${1 - tension * 0.05}) translateY(${tension * -20}px)`,
+              transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
+            }}
+          >
             {/* Side image panels with parallax */}
             <div
               className="absolute left-0 top-0 bottom-0 w-1/4 overflow-hidden hidden lg:block"
-              style={{ transform: `translateX(${-parallaxSlow * 0.2}px)` }}
+              style={{
+                transform: `translateX(${-parallaxSlow * 0.2 - tension * 30}px)`,
+                opacity: 0.4 - tension * 0.2,
+              }}
             >
               <img src={IMAGES.deliveryVan} alt="" loading="lazy" className="w-full h-full object-cover opacity-40" />
               <div className="absolute inset-0 bg-gradient-to-r from-transparent to-regencyNavy" />
             </div>
             <div
               className="absolute right-0 top-0 bottom-0 w-1/4 overflow-hidden hidden lg:block"
-              style={{ transform: `translateX(${parallaxSlow * 0.2}px)` }}
+              style={{
+                transform: `translateX(${parallaxSlow * 0.2 + tension * 30}px)`,
+                opacity: 0.4 - tension * 0.2,
+              }}
             >
               <img src={IMAGES.hospitalCorridor} alt="" loading="lazy" className="w-full h-full object-cover opacity-40" />
               <div className="absolute inset-0 bg-gradient-to-l from-transparent to-regencyNavy" />
@@ -582,7 +797,13 @@ const MorphingSection = () => {
 
             <div className="text-center max-w-3xl px-6">
               {/* Glassmorphism quote card */}
-              <div className="relative p-8 md:p-12 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10">
+              <div
+                className="relative p-8 md:p-12 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10"
+                style={{
+                  boxShadow: tension > 0.3 ? `0 0 ${30 + tension * 40}px rgba(207,181,59,${tension * 0.2})` : 'none',
+                  borderColor: tension > 0.5 ? `rgba(207,181,59,${tension * 0.3})` : undefined,
+                }}
+              >
                 <span className="absolute -top-6 left-8 text-8xl md:text-9xl font-display text-regencyGold/30 leading-none">"</span>
                 <p className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-white leading-tight">
                   When it lands, we're already there.
@@ -599,7 +820,14 @@ const MorphingSection = () => {
 
         {/* ===== STATE 3: Journey with Image Grid ===== */}
         {activeState === 3 && (
-          <div className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn">
+          <div
+            className="absolute inset-0 flex items-center justify-center z-30 animate-fadeIn"
+            style={{
+              opacity: stateProgress > 0.7 ? 1 - ((stateProgress - 0.7) / 0.3) * 0.4 : 1,
+              transform: `scale(${1 - tension * 0.05}) translateY(${tension * -20}px)`,
+              transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
+            }}
+          >
             <div className="max-w-5xl mx-auto px-6 w-full">
               <h3 className="text-center text-xs text-regencyGold tracking-[0.3em] uppercase mb-10">The Full Journey</h3>
               <div className="grid grid-cols-2 gap-4 md:gap-6">
@@ -613,7 +841,8 @@ const MorphingSection = () => {
                     key={i}
                     className="group relative rounded-2xl overflow-hidden"
                     style={{
-                      transform: `translateY(${(parallaxMedium * 0.03) * (i < 2 ? 1 : -1)}px)`,
+                      transform: `translateY(${(parallaxMedium * 0.03) * (i < 2 ? 1 : -1)}px) scale(${1 + tension * 0.02 * (i % 2 === 0 ? 1 : -1)})`,
+                      transition: 'transform 0.2s ease-out',
                     }}
                   >
                     {/* Full image background */}
@@ -624,7 +853,12 @@ const MorphingSection = () => {
 
                     {/* Glassmorphism content card */}
                     <div className="relative p-6 min-h-[220px] md:min-h-[280px] flex flex-col justify-end">
-                      <div className="p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 group-hover:bg-white/15 transition-all duration-300">
+                      <div
+                        className="p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 group-hover:bg-white/15 transition-all duration-300"
+                        style={{
+                          boxShadow: tension > 0.5 ? `0 0 ${20 + tension * 20}px rgba(207,181,59,${tension * 0.15})` : 'none',
+                        }}
+                      >
                         <div className="flex items-center gap-3 mb-2">
                           <div className="w-10 h-10 rounded-lg bg-regencyGold/20 flex items-center justify-center">
                             <item.icon className="w-5 h-5 text-regencyGold" />
@@ -678,12 +912,41 @@ const MorphingSection = () => {
           </div>
         )}
 
-        {/* ===== SCROLL HINT ===== */}
+        {/* ===== ENHANCED SCROLL HINT WITH TENSION ===== */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center z-40">
-          <span className="text-white/40 text-[10px] uppercase tracking-[0.25em]">
-            {activeState < 4 ? "Keep scrolling" : "Continue below"}
+          <span
+            className="text-[10px] uppercase tracking-[0.25em] transition-all duration-200"
+            style={{
+              color: tension > 0.5 ? `rgba(207,181,59,${0.4 + tension * 0.4})` : 'rgba(255,255,255,0.4)',
+            }}
+          >
+            {activeState < 4
+              ? tension > 0.7
+                ? "Almost there..."
+                : tension > 0.3
+                  ? "Keep going"
+                  : "Keep scrolling"
+              : "Continue below"}
           </span>
-          <div className="mt-2 w-px h-8 bg-gradient-to-b from-white/30 to-transparent mx-auto" />
+          <div
+            className="mt-2 w-px mx-auto transition-all duration-200"
+            style={{
+              height: `${32 + tension * 16}px`,
+              background: tension > 0.3
+                ? `linear-gradient(to bottom, rgba(207,181,59,${0.3 + tension * 0.5}), transparent)`
+                : 'linear-gradient(to bottom, rgba(255,255,255,0.3), transparent)',
+            }}
+          />
+          {/* Pulsing dot at bottom when high tension */}
+          {tension > 0.6 && (
+            <div
+              className="w-2 h-2 rounded-full bg-regencyGold mx-auto mt-1 animate-pulse"
+              style={{
+                opacity: tension,
+                boxShadow: `0 0 ${10 + tension * 10}px rgba(207,181,59,${tension * 0.6})`,
+              }}
+            />
+          )}
         </div>
       </div>
     </section>
@@ -754,7 +1017,7 @@ const ServicesSection = () => (
         <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">
           Specialized Medical<br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold via-yellow-300 to-regencyGold bg-[length:200%_100%] animate-shimmer">
-            Logistics Solutions
+            Service Solutions
           </span>
         </h2>
         <p className="text-white/50 max-w-xl mx-auto">
