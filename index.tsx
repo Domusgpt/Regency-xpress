@@ -105,111 +105,6 @@ const Icons = {
 };
 
 // ============================================================================
-// ANIMATED BULL LOGO SVG - Precise geometric design matching the logo
-// ============================================================================
-const AnimatedBullLogo = ({ className = "", animate = false, showText = true }: { className?: string; animate?: boolean; showText?: boolean }) => (
-  <svg viewBox={showText ? "0 0 240 200" : "0 0 240 150"} className={className}>
-    <defs>
-      <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#CFB53B"/>
-        <stop offset="50%" stopColor="#E8D378"/>
-        <stop offset="100%" stopColor="#CFB53B"/>
-      </linearGradient>
-      <linearGradient id="blueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#2B5091"/>
-        <stop offset="100%" stopColor="#1E3A6B"/>
-      </linearGradient>
-      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-        <feMerge>
-          <feMergeNode in="coloredBlur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-      <filter id="glowStrong" x="-100%" y="-100%" width="300%" height="300%">
-        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-        <feMerge>
-          <feMergeNode in="coloredBlur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-    </defs>
-    <g fill="none" stroke="#2B5091" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
-       className={animate ? "animate-pulse" : ""} filter={animate ? "url(#glowStrong)" : undefined}
-       transform="translate(20, 5)">
-      {/* LEFT HORN - outer */}
-      <path d="M25 60 L50 10 L75 55"/>
-      {/* LEFT HORN - inner panels */}
-      <path d="M50 10 L58 32 L75 55"/>
-      <path d="M35 45 L58 32"/>
-      <path d="M50 10 L42 35"/>
-
-      {/* RIGHT HORN - outer */}
-      <path d="M175 60 L150 10 L125 55"/>
-      {/* RIGHT HORN - inner panels */}
-      <path d="M150 10 L142 32 L125 55"/>
-      <path d="M165 45 L142 32"/>
-      <path d="M150 10 L158 35"/>
-
-      {/* HEAD TOP FRAME */}
-      <path d="M75 55 L85 48 L100 58 L115 48 L125 55"/>
-
-      {/* LEFT CHEEK PANELS */}
-      <path d="M75 55 L60 65 L52 90 L65 110"/>
-      <path d="M60 65 L78 72"/>
-      <path d="M52 90 L75 88"/>
-      <path d="M25 60 L35 65 L38 85"/>
-      <path d="M35 65 L60 65"/>
-      <path d="M38 85 L52 90"/>
-
-      {/* RIGHT CHEEK PANELS */}
-      <path d="M125 55 L140 65 L148 90 L135 110"/>
-      <path d="M140 65 L122 72"/>
-      <path d="M148 90 L125 88"/>
-      <path d="M175 60 L165 65 L162 85"/>
-      <path d="M165 65 L140 65"/>
-      <path d="M162 85 L148 90"/>
-
-      {/* FOREHEAD INNER STRUCTURE */}
-      <path d="M85 48 L85 72 L75 88"/>
-      <path d="M115 48 L115 72 L125 88"/>
-      <path d="M100 58 L100 75"/>
-      <path d="M85 60 L95 72 L100 68 L105 72 L115 60"/>
-
-      {/* SNOUT / NOSE FRAME */}
-      <path d="M75 88 L80 108 L100 125 L120 108 L125 88"/>
-      <path d="M65 110 L80 108"/>
-      <path d="M135 110 L120 108"/>
-
-      {/* NOSE DETAIL - inner bridge */}
-      <path d="M88 90 L92 105 L100 112 L108 105 L112 90"/>
-      <path d="M80 108 L92 105"/>
-      <path d="M120 108 L108 105"/>
-
-      {/* NOSTRILS */}
-      <circle cx="92" cy="115" r="5" fill="#2B5091" stroke="none"/>
-      <circle cx="108" cy="115" r="5" fill="#2B5091" stroke="none"/>
-
-      {/* EYES - small triangular marks */}
-      <path d="M82 82 L88 90 L94 82" fill="#2B5091" stroke="none"/>
-      <path d="M106 82 L112 90 L118 82" fill="#2B5091" stroke="none"/>
-    </g>
-
-    {/* Text below logo - styled to match */}
-    {showText && (
-      <g>
-        <text x="120" y="165" textAnchor="middle" fill="#CFB53B" fontFamily="'Georgia', 'Times New Roman', serif" fontWeight="bold" fontSize="26" fontStyle="italic">
-          Regency Xpress
-        </text>
-        <text x="120" y="188" textAnchor="middle" fill="#CFB53B" fontFamily="'Arial', sans-serif" fontWeight="400" fontSize="11" letterSpacing="10">
-          LOGISTICS
-        </text>
-      </g>
-    )}
-  </svg>
-);
-
-// ============================================================================
 // LOGO COMPONENT - Uses actual PNG logo
 // ============================================================================
 type LogoSize = "small" | "default" | "large" | "hero";
@@ -245,53 +140,96 @@ const RegencyLogo = ({
 const Navigation = ({ scrolled }: { scrolled: boolean }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Close mobile menu on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (mobileOpen) setMobileOpen(false);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [mobileOpen]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
-      scrolled ? 'py-2 bg-regencyNavy/95 backdrop-blur-lg shadow-lg' : 'py-4 bg-transparent'
+      scrolled ? 'py-2 bg-regencyNavy/95 backdrop-blur-lg shadow-xl shadow-black/20' : 'py-4 bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center">
-        <a href="#" className="flex-shrink-0">
+        <a href="#" className="flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-regencyGold/50 rounded-lg" aria-label="Regency Xpress Home">
           <RegencyLogo size="small" />
         </a>
 
         <div className="hidden md:flex items-center gap-8">
           {["Services", "About", "Metrics", "Contact"].map(item => (
             <a key={item} href={`#${item.toLowerCase()}`}
-               className="text-sm font-medium text-white/70 hover:text-regencyGold transition-colors">
+               className="relative text-sm font-medium text-white/70 hover:text-regencyGold transition-colors py-2 group focus:outline-none focus:text-regencyGold">
               {item}
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-regencyGold group-hover:w-full transition-all duration-300" />
             </a>
           ))}
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <a href="tel:1-800-555-0199" className="flex items-center gap-2 text-sm text-white/70 hover:text-white">
+          <a href="tel:1-800-555-0199" className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors focus:outline-none focus:text-regencyGold" aria-label="Call us at 1-800-555-0199">
             <Icons.Phone className="w-4 h-4" />
-            <span className="hidden lg:inline">1-800-555-0199</span>
+            <span className="hidden lg:inline">(800) 555-0199</span>
           </a>
-          <button className="px-5 py-2 bg-regencyGold text-regencyNavy font-semibold text-sm rounded-lg hover:bg-regencyGold/90 transition-all shadow-lg shadow-regencyGold/20">
+          <button className="px-5 py-2.5 bg-regencyGold text-regencyNavy font-semibold text-sm rounded-xl hover:bg-regencyGold/90 hover:shadow-xl hover:shadow-regencyGold/30 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-regencyGold/50 focus:ring-offset-2 focus:ring-offset-regencyNavy">
             Get Quote
           </button>
         </div>
 
-        <button className="md:hidden text-white p-2" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? <Icons.X /> : <Icons.Menu />}
+        <button
+          className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-regencyGold/50"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
+        >
+          <div className="relative w-6 h-6">
+            <span className={`absolute left-0 top-1 w-6 h-0.5 bg-white transition-all duration-300 ${mobileOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
+            <span className={`absolute left-0 top-3 w-6 h-0.5 bg-white transition-all duration-300 ${mobileOpen ? 'opacity-0' : ''}`} />
+            <span className={`absolute left-0 top-5 w-6 h-0.5 bg-white transition-all duration-300 ${mobileOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+          </div>
         </button>
       </div>
 
-      {mobileOpen && (
-        <div className="md:hidden bg-regencyNavy/98 backdrop-blur-lg py-6 px-4 border-t border-white/10">
-          {["Services", "About", "Metrics", "Contact"].map(item => (
-            <a key={item} href={`#${item.toLowerCase()}`}
-               className="block py-3 text-white/80 hover:text-regencyGold transition-colors"
-               onClick={() => setMobileOpen(false)}>
-              {item}
+      {/* Mobile Menu with animation */}
+      <div className={`md:hidden absolute top-full left-0 right-0 bg-regencyNavy/98 backdrop-blur-xl border-t border-white/10 overflow-hidden transition-all duration-300 ease-out ${
+        mobileOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'
+      }`}>
+        <div className="py-6 px-4">
+          {["Services", "About", "Metrics", "Contact"].map((item, i) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              className="flex items-center justify-between py-4 text-white/80 hover:text-regencyGold transition-colors border-b border-white/5 last:border-0 group"
+              onClick={() => setMobileOpen(false)}
+              style={{ transitionDelay: `${i * 50}ms` }}
+            >
+              <span className="text-lg font-medium">{item}</span>
+              <Icons.ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-regencyGold" />
             </a>
           ))}
-          <button className="mt-4 w-full py-3 bg-regencyGold text-regencyNavy font-semibold rounded-lg">
-            Get Quote
-          </button>
+          <div className="mt-6 flex flex-col gap-3">
+            <a href="tel:1-800-555-0199" className="flex items-center justify-center gap-2 py-3 text-white/70 border border-white/10 rounded-xl hover:border-regencyGold/30 transition-colors">
+              <Icons.Phone className="w-4 h-4" />
+              <span>(800) 555-0199</span>
+            </a>
+            <button className="w-full py-3.5 bg-regencyGold text-regencyNavy font-bold rounded-xl hover:bg-regencyGold/90 transition-all">
+              Get Quote
+            </button>
+          </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 };
@@ -474,6 +412,7 @@ const MorphingSection = () => {
             <img
               src={img}
               alt=""
+              loading="lazy"
               className="w-full h-full object-cover"
               style={{ filter: "brightness(0.3) saturate(0.8)" }}
             />
@@ -562,7 +501,7 @@ const MorphingSection = () => {
                 transform: `translateY(calc(-50% + ${parallaxMedium * 0.1}px))`,
               }}
             >
-              <img src={IMAGES.cargoPlane} alt="Cargo Aircraft" className="w-full h-full object-cover" />
+              <img src={IMAGES.cargoPlane} alt="Cargo Aircraft" loading="lazy" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-regencyNavy via-regencyNavy/30 to-transparent" />
               {/* Glassmorphism overlay card */}
               <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
@@ -605,7 +544,7 @@ const MorphingSection = () => {
                   >
                     {/* Background image */}
                     <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-500">
-                      <img src={item.img} alt="" className="w-full h-full object-cover" />
+                      <img src={item.img} alt="" loading="lazy" className="w-full h-full object-cover" />
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-regencyNavy via-regencyNavy/80 to-regencyNavy/40" />
 
@@ -630,14 +569,14 @@ const MorphingSection = () => {
               className="absolute left-0 top-0 bottom-0 w-1/4 overflow-hidden hidden lg:block"
               style={{ transform: `translateX(${-parallaxSlow * 0.2}px)` }}
             >
-              <img src={IMAGES.deliveryVan} alt="" className="w-full h-full object-cover opacity-40" />
+              <img src={IMAGES.deliveryVan} alt="" loading="lazy" className="w-full h-full object-cover opacity-40" />
               <div className="absolute inset-0 bg-gradient-to-r from-transparent to-regencyNavy" />
             </div>
             <div
               className="absolute right-0 top-0 bottom-0 w-1/4 overflow-hidden hidden lg:block"
               style={{ transform: `translateX(${parallaxSlow * 0.2}px)` }}
             >
-              <img src={IMAGES.hospitalCorridor} alt="" className="w-full h-full object-cover opacity-40" />
+              <img src={IMAGES.hospitalCorridor} alt="" loading="lazy" className="w-full h-full object-cover opacity-40" />
               <div className="absolute inset-0 bg-gradient-to-l from-transparent to-regencyNavy" />
             </div>
 
@@ -679,7 +618,7 @@ const MorphingSection = () => {
                   >
                     {/* Full image background */}
                     <div className="absolute inset-0">
-                      <img src={item.img} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <img src={item.img} alt="" loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-regencyNavy via-regencyNavy/70 to-transparent" />
 
@@ -710,14 +649,14 @@ const MorphingSection = () => {
               className="absolute left-[5%] top-[20%] w-48 h-64 rounded-2xl overflow-hidden opacity-60 hidden lg:block"
               style={{ transform: `translateY(${parallaxMedium * 0.1}px) rotate(-6deg)` }}
             >
-              <img src={IMAGES.medicalLab} alt="" className="w-full h-full object-cover" />
+              <img src={IMAGES.medicalLab} alt="" loading="lazy" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-regencyNavy/40" />
             </div>
             <div
               className="absolute right-[5%] bottom-[20%] w-40 h-56 rounded-2xl overflow-hidden opacity-60 hidden lg:block"
               style={{ transform: `translateY(${-parallaxMedium * 0.08}px) rotate(6deg)` }}
             >
-              <img src={IMAGES.medicalSupplies} alt="" className="w-full h-full object-cover" />
+              <img src={IMAGES.medicalSupplies} alt="" loading="lazy" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-regencyNavy/40" />
             </div>
 
@@ -833,7 +772,7 @@ const ServicesSection = () => (
 
             {/* Background Image with parallax hover */}
             <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-all duration-700 group-hover:scale-110">
-              <img src={service.image} alt="" className="w-full h-full object-cover" />
+              <img src={service.image} alt="" loading="lazy" className="w-full h-full object-cover" />
             </div>
             <div className="absolute inset-0 bg-gradient-to-br from-regencyDark via-regencyDark/90 to-regencyDark/70" />
 
@@ -980,7 +919,7 @@ const AboutSection = () => (
               { icon: Icons.Clock, text: "Real-Time Tracking" },
               { icon: Icons.Medical, text: "FDA Registered" },
             ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-regencyGold/30 hover:bg-white/8 transition-all duration-300 group">
+              <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-regencyGold/30 hover:bg-white/10 transition-all duration-300 group">
                 <div className="w-8 h-8 rounded-lg bg-regencyGold/10 flex items-center justify-center group-hover:bg-regencyGold/20 transition-colors">
                   <item.icon className="w-4 h-4 text-regencyGold" />
                 </div>
@@ -997,7 +936,7 @@ const AboutSection = () => (
         <div className="about-image relative">
           {/* Main image with parallax frame */}
           <div className="relative aspect-[4/5] rounded-2xl overflow-hidden group">
-            <img src={IMAGES.about} alt="Medical Logistics" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img src={IMAGES.about} alt="Medical Logistics" loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-regencyDark via-regencyDark/30 to-transparent" />
 
             {/* Decorative frame elements */}
@@ -1035,7 +974,7 @@ const AboutSection = () => (
 const CTASection = () => (
   <section id="cta-section" className="py-20 md:py-32 bg-gradient-to-br from-regencyNavy via-regencyBlue/20 to-regencyNavy relative overflow-hidden">
     {/* Animated grid background */}
-    <div className="absolute inset-0 opacity-20">
+    <div className="absolute inset-0 opacity-10">
       <svg className="w-full h-full">
         <pattern id="ctaGrid" width="40" height="40" patternUnits="userSpaceOnUse">
           <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#CFB53B" strokeWidth="0.5"/>
@@ -1046,29 +985,54 @@ const CTASection = () => (
 
     {/* Floating orbs */}
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <div className="absolute top-10 left-10 w-32 h-32 bg-regencyGold/20 rounded-full blur-[60px] animate-float" />
-      <div className="absolute bottom-10 right-10 w-40 h-40 bg-regencyBlue/20 rounded-full blur-[80px] animate-float-delayed" />
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-regencyGold/15 rounded-full blur-[100px] animate-float" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-regencyBlue/15 rounded-full blur-[120px] animate-float-delayed" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-regencyGold/5 rounded-full blur-[150px]" />
     </div>
 
-    <div id="cta-content" className="relative z-10 max-w-3xl mx-auto px-4 md:px-6 text-center">
-      <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-6">
-        Ready to<br />
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold via-yellow-300 to-regencyGold bg-[length:200%_100%] animate-shimmer">
-          Get Started?
-        </span>
-      </h2>
-      <p className="text-lg text-white/60 mb-10 max-w-xl mx-auto">
-        Experience the gold standard in medical logistics. Request a consultation today.
-      </p>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <button className="group px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-lg hover:shadow-xl hover:shadow-regencyGold/40 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3">
-          Request Quote
-          <Icons.ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </button>
-        <a href="tel:1-800-555-0199" className="group px-8 py-4 bg-white/5 border border-white/20 text-white font-medium text-sm uppercase tracking-wider rounded-lg hover:bg-white/10 hover:border-white/30 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
-          <Icons.Phone className="w-4 h-4 group-hover:animate-pulse" />
-          Call Now
-        </a>
+    <div id="cta-content" className="relative z-10 max-w-4xl mx-auto px-4 md:px-6">
+      {/* Glassmorphism card */}
+      <div className="p-8 md:p-12 lg:p-16 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 text-center relative overflow-hidden">
+        {/* Inner glow effects */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-regencyGold/20 rounded-full blur-[80px]" />
+
+        <div className="relative z-10">
+          {/* Badge */}
+          <span className="inline-block px-4 py-2 rounded-full bg-regencyGold/10 backdrop-blur-sm text-regencyGold text-xs tracking-[0.2em] uppercase mb-6 border border-regencyGold/20">
+            Ready to Transform Your Logistics?
+          </span>
+
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-6">
+            Let's Move Your<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold via-yellow-300 to-regencyGold bg-[length:200%_100%] animate-shimmer">
+              Critical Cargo
+            </span>
+          </h2>
+          <p className="text-base md:text-lg text-white/60 mb-10 max-w-xl mx-auto leading-relaxed">
+            Experience the gold standard in medical logistics. Our team is ready to deliver precision, reliability, and excellence.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="group px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-xl hover:shadow-2xl hover:shadow-regencyGold/40 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-regencyGold/50 focus:ring-offset-2 focus:ring-offset-regencyNavy">
+              Request a Quote
+              <Icons.ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
+            <a href="tel:1-800-555-0199" className="group px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/20 text-white font-medium text-sm uppercase tracking-wider rounded-xl hover:bg-white/10 hover:border-regencyGold/30 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-white/30">
+              <Icons.Phone className="w-4 h-4 text-regencyGold" />
+              (800) 555-0199
+            </a>
+          </div>
+
+          {/* Trust badges */}
+          <div className="mt-10 pt-8 border-t border-white/10 flex flex-wrap items-center justify-center gap-6 text-white/40 text-xs">
+            {["HIPAA Compliant", "24/7 Support", "Nationwide Coverage", "FDA Registered"].map((badge, i) => (
+              <span key={i} className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-regencyGold" />
+                {badge}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1077,58 +1041,100 @@ const CTASection = () => (
 // ============================================================================
 // FOOTER
 // ============================================================================
-const Footer = () => (
-  <footer id="contact" className="pt-16 pb-8 bg-regencyNavy border-t border-white/10">
-    <div className="max-w-7xl mx-auto px-4 md:px-6">
-      <div className="grid md:grid-cols-4 gap-10 mb-12">
-        <div className="md:col-span-2">
-          <RegencyLogo size="default" className="mb-4" />
-          <p className="text-white/50 text-sm leading-relaxed max-w-md mb-6">
-            Premier logistics provider specializing in expedited medical freight,
-            pharmaceutical transport, and white-glove delivery solutions nationwide.
-          </p>
-        </div>
+const Footer = () => {
+  const currentYear = new Date().getFullYear();
 
-        <div>
-          <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Services</h4>
-          <ul className="space-y-2">
-            {["Dedicated Fleet", "STAT Medical", "White Glove", "Nationwide"].map((item, i) => (
-              <li key={i}>
-                <a href="#services" className="text-white/50 hover:text-regencyGold text-sm transition-colors">{item}</a>
+  return (
+    <footer id="contact" className="pt-16 pb-8 bg-regencyNavy relative overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-regencyBlue/5 rounded-full blur-[150px]" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-regencyGold/5 rounded-full blur-[120px]" />
+      </div>
+
+      {/* Top border gradient */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-regencyGold/30 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
+        <div className="grid md:grid-cols-4 gap-10 mb-12">
+          <div className="md:col-span-2">
+            <RegencyLogo size="default" className="mb-6" />
+            <p className="text-white/50 text-sm leading-relaxed max-w-md mb-6">
+              Premier logistics provider specializing in expedited medical freight,
+              pharmaceutical transport, and white-glove delivery solutions nationwide.
+            </p>
+            {/* Social links placeholder */}
+            <div className="flex gap-3">
+              {["LinkedIn", "Twitter"].map((social) => (
+                <a
+                  key={social}
+                  href="#"
+                  aria-label={`Follow us on ${social}`}
+                  className="w-10 h-10 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/50 hover:text-regencyGold hover:border-regencyGold/30 hover:bg-regencyGold/10 transition-all duration-300"
+                >
+                  <span className="text-xs font-medium">{social[0]}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Services</h4>
+            <ul className="space-y-3">
+              {["Dedicated Fleet", "STAT Medical", "White Glove", "Nationwide"].map((item, i) => (
+                <li key={i}>
+                  <a href="#services" className="text-white/50 hover:text-regencyGold text-sm transition-colors flex items-center gap-2 group">
+                    <span className="w-1 h-1 rounded-full bg-regencyGold/50 group-hover:bg-regencyGold transition-colors" />
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Contact</h4>
+            <ul className="space-y-4">
+              <li>
+                <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 text-white/50 text-sm group hover:text-white/70 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-regencyGold/10 flex items-center justify-center flex-shrink-0 group-hover:bg-regencyGold/20 transition-colors">
+                    <Icons.MapPin className="w-4 h-4 text-regencyGold" />
+                  </div>
+                  <span>1200 Logistics Way<br />Los Angeles, CA 90021</span>
+                </a>
               </li>
-            ))}
-          </ul>
+              <li>
+                <a href="tel:1-800-555-0199" className="flex items-center gap-3 text-white/50 text-sm group hover:text-white/70 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-regencyGold/10 flex items-center justify-center flex-shrink-0 group-hover:bg-regencyGold/20 transition-colors">
+                    <Icons.Phone className="w-4 h-4 text-regencyGold" />
+                  </div>
+                  <span>(800) 555-0199</span>
+                </a>
+              </li>
+              <li>
+                <a href="mailto:dispatch@regencyxpress.com" className="flex items-center gap-3 text-white/50 text-sm group hover:text-white/70 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-regencyGold/10 flex items-center justify-center flex-shrink-0 group-hover:bg-regencyGold/20 transition-colors">
+                    <Icons.Mail className="w-4 h-4 text-regencyGold" />
+                  </div>
+                  <span>dispatch@regencyxpress.com</span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <div>
-          <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Contact</h4>
-          <ul className="space-y-3">
-            <li className="flex items-start gap-3 text-white/50 text-sm">
-              <Icons.MapPin className="w-4 h-4 text-regencyGold flex-shrink-0 mt-0.5" />
-              <span>1200 Logistics Way<br />Los Angeles, CA 90021</span>
-            </li>
-            <li className="flex items-center gap-3 text-white/50 text-sm">
-              <Icons.Phone className="w-4 h-4 text-regencyGold flex-shrink-0" />
-              <a href="tel:1-800-555-0199" className="hover:text-regencyGold transition-colors">(800) 555-0199</a>
-            </li>
-            <li className="flex items-center gap-3 text-white/50 text-sm">
-              <Icons.Mail className="w-4 h-4 text-regencyGold flex-shrink-0" />
-              <a href="mailto:dispatch@regencyxpress.com" className="hover:text-regencyGold transition-colors">dispatch@regencyxpress.com</a>
-            </li>
-          </ul>
+        <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <span className="text-white/30 text-xs">&copy; {currentYear} Regency Xpress Services. All rights reserved.</span>
+          <div className="flex gap-6 text-white/30 text-xs">
+            <a href="#" className="hover:text-regencyGold transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-regencyGold transition-colors">Terms of Service</a>
+            <a href="#" className="hover:text-regencyGold transition-colors">HIPAA Compliance</a>
+          </div>
         </div>
       </div>
-
-      <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-        <span className="text-white/30 text-xs">&copy; 2024 Regency Xpress Services. All rights reserved.</span>
-        <div className="flex gap-6 text-white/30 text-xs">
-          <a href="#" className="hover:text-regencyGold transition-colors">Privacy</a>
-          <a href="#" className="hover:text-regencyGold transition-colors">Terms</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};
 
 // ============================================================================
 // LOADING SCREEN - Premium animated intro
@@ -1327,18 +1333,16 @@ const App = () => {
           // Counter animation
           document.querySelectorAll('.stat-value').forEach((el) => {
             const target = parseInt(el.getAttribute('data-value') || '0');
-            gsap.fromTo({ val: 0 },
-              { val: 0 },
-              {
-                val: target,
-                duration: 2,
-                delay: 0.3,
-                ease: "power2.out",
-                onUpdate: function() {
-                  (el as HTMLElement).textContent = String(Math.round(this.targets()[0].val));
-                }
+            const obj = { val: 0 };
+            gsap.to(obj, {
+              val: target,
+              duration: 2,
+              delay: 0.3,
+              ease: "power2.out",
+              onUpdate: () => {
+                (el as HTMLElement).textContent = String(Math.round(obj.val));
               }
-            );
+            });
           });
         },
         once: true
