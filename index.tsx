@@ -6,9 +6,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 // ============================================================================
-// LOGO CONFIGURATION
+// LOGO CONFIGURATION - Using dark/transparent logo
 // ============================================================================
-const LOGO_URL = "https://raw.githubusercontent.com/Domusgpt/Regency-xpress/main/logo.png";
+const LOGO_URL = "https://raw.githubusercontent.com/Domusgpt/Regency-xpress/claude/design-regency-xpress-site-b8R1a/logo-dark.png";
 
 // ============================================================================
 // PROFESSIONAL IMAGES - Medical Logistics Focused
@@ -96,84 +96,157 @@ const Icons = {
 };
 
 // ============================================================================
-// ANIMATED BULL LOGO SVG
+// ANIMATED BULL LOGO SVG - Precise geometric design matching the logo
 // ============================================================================
-const AnimatedBullLogo = ({ className = "", animate = false }: { className?: string; animate?: boolean }) => (
-  <svg viewBox="0 0 200 140" className={className}>
+const AnimatedBullLogo = ({ className = "", animate = false, showText = true }: { className?: string; animate?: boolean; showText?: boolean }) => (
+  <svg viewBox={showText ? "0 0 240 200" : "0 0 240 150"} className={className}>
     <defs>
-      <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" stopColor="#CFB53B"/>
-        <stop offset="50%" stopColor="#f4e5a3"/>
+        <stop offset="50%" stopColor="#E8D378"/>
         <stop offset="100%" stopColor="#CFB53B"/>
       </linearGradient>
-      <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <linearGradient id="blueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" stopColor="#2B5091"/>
-        <stop offset="100%" stopColor="#4FC3F7"/>
+        <stop offset="100%" stopColor="#1E3A6B"/>
       </linearGradient>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <filter id="glowStrong" x="-100%" y="-100%" width="300%" height="300%">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
     </defs>
-    <g fill="none" stroke="url(#blueGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-       className={animate ? "animate-pulse" : ""}>
-      {/* Left Horn */}
-      <path d="M35 55 L55 25 L75 55" className="logo-path"/>
-      {/* Right Horn */}
-      <path d="M125 55 L145 25 L165 55" className="logo-path"/>
-      {/* Head Top */}
-      <path d="M55 55 L75 40 L100 50 L125 40 L145 55" className="logo-path"/>
-      {/* Head Sides */}
-      <path d="M55 55 L45 85 L60 105" className="logo-path"/>
-      <path d="M145 55 L155 85 L140 105" className="logo-path"/>
-      {/* Face Shape */}
-      <path d="M60 105 L75 90 L90 100 L100 95 L110 100 L125 90 L140 105" className="logo-path"/>
-      {/* Nose/Snout */}
-      <path d="M75 90 L80 115 L100 125 L120 115 L125 90" className="logo-path"/>
-      <path d="M80 115 L90 108 L100 112 L110 108 L120 115" className="logo-path"/>
-      {/* Nostrils */}
-      <circle cx="92" cy="115" r="3" fill="url(#blueGradient)" stroke="none"/>
-      <circle cx="108" cy="115" r="3" fill="url(#blueGradient)" stroke="none"/>
-      {/* Inner Details */}
-      <path d="M75 55 L85 70 L100 60 L115 70 L125 55" className="logo-path"/>
-      {/* Eyes */}
-      <path d="M88 82 L93 88 L98 82" fill="url(#blueGradient)" stroke="none"/>
-      <path d="M102 82 L107 88 L112 82" fill="url(#blueGradient)" stroke="none"/>
+    <g fill="none" stroke="#2B5091" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+       className={animate ? "animate-pulse" : ""} filter={animate ? "url(#glowStrong)" : undefined}
+       transform="translate(20, 5)">
+      {/* LEFT HORN - outer */}
+      <path d="M25 60 L50 10 L75 55"/>
+      {/* LEFT HORN - inner panels */}
+      <path d="M50 10 L58 32 L75 55"/>
+      <path d="M35 45 L58 32"/>
+      <path d="M50 10 L42 35"/>
+
+      {/* RIGHT HORN - outer */}
+      <path d="M175 60 L150 10 L125 55"/>
+      {/* RIGHT HORN - inner panels */}
+      <path d="M150 10 L142 32 L125 55"/>
+      <path d="M165 45 L142 32"/>
+      <path d="M150 10 L158 35"/>
+
+      {/* HEAD TOP FRAME */}
+      <path d="M75 55 L85 48 L100 58 L115 48 L125 55"/>
+
+      {/* LEFT CHEEK PANELS */}
+      <path d="M75 55 L60 65 L52 90 L65 110"/>
+      <path d="M60 65 L78 72"/>
+      <path d="M52 90 L75 88"/>
+      <path d="M25 60 L35 65 L38 85"/>
+      <path d="M35 65 L60 65"/>
+      <path d="M38 85 L52 90"/>
+
+      {/* RIGHT CHEEK PANELS */}
+      <path d="M125 55 L140 65 L148 90 L135 110"/>
+      <path d="M140 65 L122 72"/>
+      <path d="M148 90 L125 88"/>
+      <path d="M175 60 L165 65 L162 85"/>
+      <path d="M165 65 L140 65"/>
+      <path d="M162 85 L148 90"/>
+
+      {/* FOREHEAD INNER STRUCTURE */}
+      <path d="M85 48 L85 72 L75 88"/>
+      <path d="M115 48 L115 72 L125 88"/>
+      <path d="M100 58 L100 75"/>
+      <path d="M85 60 L95 72 L100 68 L105 72 L115 60"/>
+
+      {/* SNOUT / NOSE FRAME */}
+      <path d="M75 88 L80 108 L100 125 L120 108 L125 88"/>
+      <path d="M65 110 L80 108"/>
+      <path d="M135 110 L120 108"/>
+
+      {/* NOSE DETAIL - inner bridge */}
+      <path d="M88 90 L92 105 L100 112 L108 105 L112 90"/>
+      <path d="M80 108 L92 105"/>
+      <path d="M120 108 L108 105"/>
+
+      {/* NOSTRILS */}
+      <circle cx="92" cy="115" r="5" fill="#2B5091" stroke="none"/>
+      <circle cx="108" cy="115" r="5" fill="#2B5091" stroke="none"/>
+
+      {/* EYES - small triangular marks */}
+      <path d="M82 82 L88 90 L94 82" fill="#2B5091" stroke="none"/>
+      <path d="M106 82 L112 90 L118 82" fill="#2B5091" stroke="none"/>
     </g>
+
+    {/* Text below logo - styled to match */}
+    {showText && (
+      <g>
+        <text x="120" y="165" textAnchor="middle" fill="#CFB53B" fontFamily="'Georgia', 'Times New Roman', serif" fontWeight="bold" fontSize="26" fontStyle="italic">
+          Regency Xpress
+        </text>
+        <text x="120" y="188" textAnchor="middle" fill="#CFB53B" fontFamily="'Arial', sans-serif" fontWeight="400" fontSize="11" letterSpacing="10">
+          LOGISTICS
+        </text>
+      </g>
+    )}
   </svg>
 );
 
 // ============================================================================
-// LOGO COMPONENT WITH FALLBACK
+// LOGO COMPONENT - Prioritizes SVG for crisp rendering
 // ============================================================================
 type LogoSize = "small" | "default" | "large" | "hero";
+type LogoMode = "svg" | "image" | "auto";
 
-const RegencyLogo = ({ className = "", size = "default" }: { className?: string; size?: LogoSize }) => {
+const RegencyLogo = ({
+  className = "",
+  size = "default",
+  mode = "auto",
+  showText = true,
+  animate = false
+}: {
+  className?: string;
+  size?: LogoSize;
+  mode?: LogoMode;
+  showText?: boolean;
+  animate?: boolean;
+}) => {
   const [imageError, setImageError] = useState(false);
 
   const sizeClasses: Record<LogoSize, string> = {
-    small: "w-24 md:w-28",
-    default: "w-40 md:w-48",
-    large: "w-56 md:w-72",
-    hero: "w-64 md:w-80 lg:w-96"
+    small: "w-28 md:w-32",
+    default: "w-44 md:w-52",
+    large: "w-60 md:w-80",
+    hero: "w-72 md:w-96 lg:w-[28rem]"
   };
 
-  if (!imageError) {
+  // Use SVG for hero and large sizes for crisp rendering, or if mode is 'svg'
+  const useSvg = mode === "svg" || (mode === "auto" && (size === "hero" || size === "large" || imageError));
+
+  if (useSvg) {
     return (
       <div className={`${sizeClasses[size]} ${className}`}>
-        <img
-          src={LOGO_URL}
-          alt="Regency Xpress Services"
-          className="w-full h-auto object-contain drop-shadow-lg"
-          onError={() => setImageError(true)}
-        />
+        <AnimatedBullLogo className="w-full h-auto" showText={showText} animate={animate} />
       </div>
     );
   }
 
   return (
-    <div className={`flex flex-col items-center ${className}`}>
-      <AnimatedBullLogo className={sizeClasses[size]} />
-      <div className="text-center mt-2">
-        <span className="font-display font-bold text-2xl md:text-3xl text-regencyGold">Regency Xpress</span>
-        <span className="block text-xs text-regencyBlue tracking-[0.3em] uppercase">SERVICES</span>
-      </div>
+    <div className={`${sizeClasses[size]} ${className}`}>
+      <img
+        src={LOGO_URL}
+        alt="Regency Xpress Logistics"
+        className="w-full h-auto object-contain drop-shadow-lg"
+        onError={() => setImageError(true)}
+      />
     </div>
   );
 };
@@ -236,50 +309,56 @@ const Navigation = ({ scrolled }: { scrolled: boolean }) => {
 };
 
 // ============================================================================
-// HERO SECTION - Refined
+// HERO SECTION - Premium showcase with SVG logo
 // ============================================================================
 const HeroSection = () => (
   <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-regencyNavy">
     {/* Background Image with Overlay */}
     <div className="absolute inset-0">
       <div className="absolute inset-0 bg-gradient-to-br from-regencyNavy via-regencyNavy/95 to-regencyDark z-10" />
-      <img src={IMAGES.hero} alt="" className="w-full h-full object-cover opacity-30" />
+      <img src={IMAGES.hero} alt="" className="w-full h-full object-cover opacity-25" />
     </div>
 
     {/* Animated Background Elements */}
     <div className="absolute inset-0 z-10 overflow-hidden">
-      <div className="absolute top-20 left-10 w-72 h-72 bg-regencyBlue/20 rounded-full blur-[100px] animate-pulse" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-regencyGold/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-regencyBlue/20 rounded-full blur-[100px] animate-float" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-regencyGold/15 rounded-full blur-[120px] animate-float-delayed" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-regencyBlue/10 rounded-full blur-[150px] animate-pulse" />
     </div>
 
     {/* Grid Pattern */}
-    <div className="absolute inset-0 z-10 opacity-20">
+    <div className="absolute inset-0 z-10 opacity-15">
       <svg className="w-full h-full">
-        <pattern id="heroGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#2B5091" strokeWidth="0.5" opacity="0.5"/>
+        <pattern id="heroGrid" width="50" height="50" patternUnits="userSpaceOnUse">
+          <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#2B5091" strokeWidth="0.5" opacity="0.5"/>
         </pattern>
         <rect width="100%" height="100%" fill="url(#heroGrid)" />
       </svg>
     </div>
 
     {/* Content */}
-    <div className="relative z-20 max-w-6xl mx-auto px-4 md:px-6 text-center pt-20">
-      {/* Logo with Glow */}
-      <div id="hero-logo" className="mb-8 relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-48 h-48 md:w-64 md:h-64 bg-regencyGold/20 rounded-full blur-[80px]" />
+    <div className="relative z-20 max-w-6xl mx-auto px-4 md:px-6 text-center pt-16 md:pt-20">
+      {/* Logo with Enhanced Glow */}
+      <div id="hero-logo" className="mb-6 md:mb-8 relative">
+        {/* Multi-layer glow effect */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-64 h-64 md:w-80 md:h-80 bg-regencyGold/20 rounded-full blur-[100px] animate-pulse" />
         </div>
-        <RegencyLogo size="hero" className="relative mx-auto" />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-48 h-48 md:w-56 md:h-56 bg-regencyBlue/30 rounded-full blur-[60px] animate-float" />
+        </div>
+        {/* SVG Logo - crisp at any size */}
+        <RegencyLogo size="hero" mode="svg" showText={true} className="relative mx-auto" />
       </div>
 
       {/* Tagline */}
-      <div id="hero-tagline" className="mb-10">
-        <p className="inline-block px-4 py-2 rounded-full bg-regencyBlue/20 border border-regencyBlue/30 text-regencyBlue text-xs md:text-sm tracking-[0.2em] uppercase mb-6">
+      <div id="hero-tagline" className="mb-8 md:mb-10">
+        <p className="inline-block px-5 py-2.5 rounded-full bg-regencyBlue/20 border border-regencyBlue/30 text-regencyBlue text-xs md:text-sm tracking-[0.2em] uppercase mb-6 backdrop-blur-sm">
           Premium Medical Logistics
         </p>
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6 leading-tight">
           Precision in<br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold via-yellow-300 to-regencyGold animate-shimmer bg-[length:200%_100%]">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold via-yellow-300 to-regencyGold bg-[length:200%_100%] animate-shimmer">
             Every Mile
           </span>
         </h1>
@@ -291,25 +370,25 @@ const HeroSection = () => (
 
       {/* CTA Buttons */}
       <div id="hero-cta" className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <button className="group w-full sm:w-auto px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-lg hover:shadow-xl hover:shadow-regencyGold/30 transition-all duration-300 flex items-center justify-center gap-3">
+        <button className="group w-full sm:w-auto px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-lg hover:shadow-xl hover:shadow-regencyGold/40 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3">
           Request Quote
           <Icons.ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
-        <button className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/20 text-white font-medium text-sm uppercase tracking-wider rounded-lg hover:bg-white/10 hover:border-white/30 transition-all duration-300">
+        <button className="group w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/20 text-white font-medium text-sm uppercase tracking-wider rounded-lg hover:bg-white/10 hover:border-white/30 hover:scale-105 transition-all duration-300">
           View Services
         </button>
       </div>
 
       {/* Stats Preview */}
-      <div id="hero-stats" className="mt-16 pt-8 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+      <div id="hero-stats" className="mt-12 md:mt-16 pt-8 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
         {[
           { value: "500+", label: "Medical Units" },
           { value: "48", label: "States Covered" },
           { value: "24/7", label: "Dispatch" },
           { value: "99%", label: "On-Time" },
         ].map((stat, i) => (
-          <div key={i} className="text-center">
-            <div className="text-2xl md:text-3xl font-display font-bold text-regencyGold">{stat.value}</div>
+          <div key={i} className="text-center group">
+            <div className="text-2xl md:text-3xl font-display font-bold text-regencyGold group-hover:scale-110 transition-transform duration-300">{stat.value}</div>
             <div className="text-xs text-white/50 uppercase tracking-wider mt-1">{stat.label}</div>
           </div>
         ))}
@@ -318,9 +397,9 @@ const HeroSection = () => (
 
     {/* Scroll Indicator */}
     <div id="scroll-indicator" className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
-      <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] mb-3">Scroll</span>
-      <div className="w-5 h-8 rounded-full border border-white/30 flex justify-center pt-2">
-        <div className="w-1 h-2 bg-regencyGold rounded-full animate-bounce" />
+      <span className="text-[10px] text-white/40 uppercase tracking-[0.3em] mb-3">Scroll</span>
+      <div className="w-6 h-10 rounded-full border border-white/30 flex justify-center pt-2">
+        <div className="w-1.5 h-2.5 bg-regencyGold rounded-full animate-bounce" />
       </div>
     </div>
   </section>
@@ -388,12 +467,12 @@ const ServicesSection = () => (
   <section id="services" className="py-20 md:py-32 bg-regencyDark">
     <div className="max-w-7xl mx-auto px-4 md:px-6">
       <div className="services-header text-center mb-16">
-        <span className="inline-block px-4 py-2 rounded-full bg-regencyGold/10 text-regencyGold text-xs tracking-[0.2em] uppercase mb-4">
+        <span className="inline-block px-4 py-2 rounded-full bg-regencyGold/10 text-regencyGold text-xs tracking-[0.2em] uppercase mb-4 animate-pulse">
           Our Capabilities
         </span>
         <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4">
           Specialized Medical<br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold to-yellow-300">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold via-yellow-300 to-regencyGold bg-[length:200%_100%] animate-shimmer">
             Logistics Solutions
           </span>
         </h2>
@@ -404,37 +483,50 @@ const ServicesSection = () => (
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {services.map((service, index) => (
-          <div key={index} className="service-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 hover:border-regencyGold/30 transition-all duration-500">
+          <div key={index} className="service-card group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 hover:border-regencyGold/50 transition-all duration-500 transform-gpu">
+            {/* Card Glow Effect */}
+            <div className="card-glow absolute inset-0 opacity-0 pointer-events-none">
+              <div className="absolute inset-0 bg-gradient-to-br from-regencyGold/20 via-transparent to-regencyBlue/20 blur-xl" />
+            </div>
+
             {/* Background Image */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700">
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-15 transition-opacity duration-700">
               <img src={service.image} alt="" className="w-full h-full object-cover" />
             </div>
 
-            <div className="relative p-6 md:p-8">
-              {/* Icon */}
-              <div className="w-14 h-14 rounded-xl bg-regencyGold/10 border border-regencyGold/20 flex items-center justify-center text-regencyGold mb-6 group-hover:scale-110 group-hover:bg-regencyGold/20 transition-all duration-300">
-                <service.icon className="w-7 h-7" />
+            {/* Animated border gradient */}
+            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="absolute inset-[-1px] rounded-2xl bg-gradient-to-r from-regencyGold/50 via-regencyBlue/50 to-regencyGold/50 bg-[length:200%_100%] animate-shimmer" style={{ padding: '1px' }}>
+                <div className="w-full h-full rounded-2xl bg-regencyDark/95" />
+              </div>
+            </div>
+
+            <div className="relative p-6 md:p-8 z-10">
+              {/* Icon with pulse effect */}
+              <div className="w-14 h-14 rounded-xl bg-regencyGold/10 border border-regencyGold/20 flex items-center justify-center text-regencyGold mb-6 group-hover:scale-110 group-hover:bg-regencyGold/20 group-hover:shadow-lg group-hover:shadow-regencyGold/20 transition-all duration-300">
+                <service.icon className="w-7 h-7 group-hover:animate-pulse" />
               </div>
 
               {/* Content */}
               <span className="text-regencyBlue text-xs font-semibold tracking-widest uppercase">{service.subtitle}</span>
-              <h3 className="text-xl md:text-2xl font-display font-bold text-white mt-1 mb-3 group-hover:text-regencyGold transition-colors">
+              <h3 className="text-xl md:text-2xl font-display font-bold text-white mt-1 mb-3 group-hover:text-regencyGold transition-colors duration-300">
                 {service.title}
               </h3>
               <p className="text-white/50 text-sm leading-relaxed mb-6">{service.description}</p>
 
-              {/* Features */}
+              {/* Features with hover effects */}
               <div className="flex flex-wrap gap-2 mb-6">
                 {service.features.map((feature, i) => (
-                  <span key={i} className="text-xs px-3 py-1 rounded-full bg-white/5 text-white/60 border border-white/10">
+                  <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-white/5 text-white/60 border border-white/10 hover:border-regencyGold/30 hover:text-regencyGold hover:bg-regencyGold/5 transition-all duration-300 cursor-default">
                     {feature}
                   </span>
                 ))}
               </div>
 
-              {/* CTA */}
-              <a href="#contact" className="inline-flex items-center gap-2 text-regencyGold text-sm font-medium group-hover:gap-3 transition-all">
-                Learn More <Icons.ArrowRight className="w-4 h-4" />
+              {/* CTA with animated arrow */}
+              <a href="#contact" className="inline-flex items-center gap-2 text-regencyGold text-sm font-medium hover:gap-4 transition-all duration-300 group/link">
+                Learn More
+                <Icons.ArrowRight className="w-4 h-4 transform group-hover/link:translate-x-1 transition-transform" />
               </a>
             </div>
           </div>
@@ -448,31 +540,45 @@ const ServicesSection = () => (
 // STATS SECTION
 // ============================================================================
 const StatsSection = () => (
-  <section id="metrics" className="py-20 md:py-32 bg-gradient-to-b from-regencyDark via-regencyNavy/50 to-regencyDark">
-    <div className="max-w-7xl mx-auto px-4 md:px-6">
+  <section id="metrics" className="py-20 md:py-32 bg-gradient-to-b from-regencyDark via-regencyNavy/50 to-regencyDark relative overflow-hidden">
+    {/* Animated background particles */}
+    <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-regencyBlue/10 rounded-full blur-[100px] animate-float" />
+      <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-regencyGold/10 rounded-full blur-[80px] animate-float-delayed" />
+    </div>
+
+    <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
       <div className="text-center mb-16">
         <span className="inline-block px-4 py-2 rounded-full bg-regencyBlue/10 text-regencyBlue text-xs tracking-[0.2em] uppercase mb-4">
           By the Numbers
         </span>
         <h2 className="text-3xl md:text-5xl font-display font-bold text-white">
-          Performance <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyBlue to-cyan-400">Metrics</span>
+          Performance <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyBlue via-cyan-400 to-regencyBlue bg-[length:200%_100%] animate-shimmer">Metrics</span>
         </h2>
       </div>
 
-      <div id="stats-grid" className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div id="stats-grid" className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
         {[
-          { value: "500", suffix: "+", label: "Medical Units", desc: "Active fleet" },
-          { value: "48", suffix: "", label: "States", desc: "Nationwide coverage" },
-          { value: "24", suffix: "/7", label: "Dispatch", desc: "Always available" },
-          { value: "99", suffix: "%", label: "On-Time", desc: "Industry leading" },
+          { value: 500, suffix: "+", label: "Medical Units", desc: "Active fleet" },
+          { value: 48, suffix: "", label: "States", desc: "Nationwide coverage" },
+          { value: 24, suffix: "/7", label: "Dispatch", desc: "Always available" },
+          { value: 99, suffix: "%", label: "On-Time", desc: "Industry leading" },
         ].map((stat, i) => (
-          <div key={i} className="stat-item text-center p-6 rounded-2xl bg-white/5 border border-white/10">
-            <div className="flex items-baseline justify-center gap-1 mb-2">
-              <span className="text-4xl md:text-5xl font-display font-bold text-white">{stat.value}</span>
-              <span className="text-2xl md:text-3xl font-display font-bold text-regencyGold">{stat.suffix}</span>
+          <div key={i} className="stat-item group text-center p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-regencyGold/30 hover:bg-white/8 transition-all duration-500 transform-gpu hover:scale-105">
+            {/* Glow on hover */}
+            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <div className="absolute inset-0 bg-gradient-to-br from-regencyGold/10 to-regencyBlue/10 blur-xl" />
             </div>
-            <span className="text-white font-semibold block">{stat.label}</span>
-            <span className="text-white/40 text-sm">{stat.desc}</span>
+            <div className="relative z-10">
+              <div className="flex items-baseline justify-center gap-1 mb-2">
+                <span className="stat-value text-4xl md:text-5xl font-display font-bold text-white" data-value={stat.value} data-suffix="">
+                  {stat.value}
+                </span>
+                <span className="text-2xl md:text-3xl font-display font-bold text-regencyGold animate-pulse">{stat.suffix}</span>
+              </div>
+              <span className="text-white font-semibold block group-hover:text-regencyGold transition-colors duration-300">{stat.label}</span>
+              <span className="text-white/40 text-sm">{stat.desc}</span>
+            </div>
           </div>
         ))}
       </div>
@@ -544,7 +650,8 @@ const AboutSection = () => (
 // CTA SECTION
 // ============================================================================
 const CTASection = () => (
-  <section className="py-20 md:py-32 bg-gradient-to-br from-regencyNavy via-regencyBlue/20 to-regencyNavy relative overflow-hidden">
+  <section id="cta-section" className="py-20 md:py-32 bg-gradient-to-br from-regencyNavy via-regencyBlue/20 to-regencyNavy relative overflow-hidden">
+    {/* Animated grid background */}
     <div className="absolute inset-0 opacity-20">
       <svg className="w-full h-full">
         <pattern id="ctaGrid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -554,10 +661,16 @@ const CTASection = () => (
       </svg>
     </div>
 
-    <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-6 text-center">
+    {/* Floating orbs */}
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute top-10 left-10 w-32 h-32 bg-regencyGold/20 rounded-full blur-[60px] animate-float" />
+      <div className="absolute bottom-10 right-10 w-40 h-40 bg-regencyBlue/20 rounded-full blur-[80px] animate-float-delayed" />
+    </div>
+
+    <div id="cta-content" className="relative z-10 max-w-3xl mx-auto px-4 md:px-6 text-center">
       <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-6">
         Ready to<br />
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold to-yellow-300">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-regencyGold via-yellow-300 to-regencyGold bg-[length:200%_100%] animate-shimmer">
           Get Started?
         </span>
       </h2>
@@ -565,12 +678,12 @@ const CTASection = () => (
         Experience the gold standard in medical logistics. Request a consultation today.
       </p>
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <button className="group px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-lg hover:shadow-xl hover:shadow-regencyGold/30 transition-all flex items-center justify-center gap-3">
+        <button className="group px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-lg hover:shadow-xl hover:shadow-regencyGold/40 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3">
           Request Quote
           <Icons.ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
-        <a href="tel:1-800-555-0199" className="px-8 py-4 bg-white/5 border border-white/20 text-white font-medium text-sm uppercase tracking-wider rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-          <Icons.Phone className="w-4 h-4" />
+        <a href="tel:1-800-555-0199" className="group px-8 py-4 bg-white/5 border border-white/20 text-white font-medium text-sm uppercase tracking-wider rounded-lg hover:bg-white/10 hover:border-white/30 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
+          <Icons.Phone className="w-4 h-4 group-hover:animate-pulse" />
           Call Now
         </a>
       </div>
@@ -635,23 +748,34 @@ const Footer = () => (
 );
 
 // ============================================================================
-// LOADING SCREEN
+// LOADING SCREEN - Premium animated intro
 // ============================================================================
 const LoadingScreen = ({ progress }: { progress: number }) => (
-  <div className="fixed inset-0 z-[100] bg-regencyNavy flex flex-col items-center justify-center">
-    <div className="relative mb-8">
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-32 h-32 bg-regencyGold/20 rounded-full blur-[40px] animate-pulse" />
-      </div>
-      <AnimatedBullLogo className="w-24 h-24 relative" animate />
+  <div className="fixed inset-0 z-[100] bg-regencyNavy flex flex-col items-center justify-center overflow-hidden">
+    {/* Animated background orbs */}
+    <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-regencyBlue/20 rounded-full blur-[100px] animate-float" />
+      <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-regencyGold/15 rounded-full blur-[80px] animate-float-delayed" />
     </div>
-    <div className="w-40 h-1 bg-white/10 rounded-full overflow-hidden">
+
+    {/* Logo with glow */}
+    <div className="relative mb-10">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-48 h-48 bg-regencyGold/25 rounded-full blur-[60px] animate-pulse" />
+      </div>
+      <div className="relative">
+        <AnimatedBullLogo className="w-56 md:w-72 h-auto" showText={true} animate={true} />
+      </div>
+    </div>
+
+    {/* Progress bar */}
+    <div className="w-48 h-1.5 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
       <div
-        className="h-full bg-gradient-to-r from-regencyBlue to-regencyGold rounded-full transition-all duration-300"
+        className="h-full bg-gradient-to-r from-regencyBlue via-regencyGold to-regencyBlue bg-[length:200%_100%] animate-shimmer rounded-full transition-all duration-300 ease-out"
         style={{ width: `${Math.min(progress, 100)}%` }}
       />
     </div>
-    <span className="mt-4 text-white/40 text-xs uppercase tracking-[0.2em]">Loading</span>
+    <span className="mt-4 text-white/50 text-xs uppercase tracking-[0.3em] font-light">Loading</span>
   </div>
 );
 
@@ -688,47 +812,100 @@ const App = () => {
     if (loading || !mainRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Hero Intro Animation
+      // Hero Intro Animation - quick and snappy
       const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
       heroTl
-        .from("#hero-logo", { y: 50, opacity: 0, scale: 0.9, duration: 1 })
-        .from("#hero-tagline > *", { y: 30, opacity: 0, stagger: 0.1, duration: 0.8 }, "-=0.5")
-        .from("#hero-cta > *", { y: 20, opacity: 0, stagger: 0.1, duration: 0.6 }, "-=0.4")
-        .from("#hero-stats > *", { y: 20, opacity: 0, stagger: 0.05, duration: 0.5 }, "-=0.3")
-        .from("#scroll-indicator", { opacity: 0, duration: 0.5 }, "-=0.2");
+        .from("#hero-logo", { y: 30, opacity: 0, scale: 0.95, duration: 0.8 })
+        .from("#hero-tagline > *", { y: 20, opacity: 0, stagger: 0.08, duration: 0.6 }, "-=0.4")
+        .from("#hero-cta > *", { y: 15, opacity: 0, stagger: 0.08, duration: 0.5 }, "-=0.3")
+        .from("#hero-stats > *", { y: 15, opacity: 0, stagger: 0.04, duration: 0.4 }, "-=0.2")
+        .from("#scroll-indicator", { opacity: 0, duration: 0.4 }, "-=0.1");
 
-      // Hero Scroll
+      // Hero Parallax on Scroll - smoother
       gsap.timeline({
-        scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 }
+        scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1.5 }
       })
-        .to("#hero-logo", { y: -80, opacity: 0, scale: 0.95 })
-        .to("#hero-tagline", { y: -40, opacity: 0 }, "<")
-        .to("#hero-cta", { y: -20, opacity: 0 }, "<0.1");
+        .to("#hero-logo", { y: -60, scale: 0.97 })
+        .to("#hero-tagline", { y: -30 }, "<")
+        .to("#hero-cta", { y: -15 }, "<0.05");
 
-      // Services
-      gsap.from(".services-header", {
-        scrollTrigger: { trigger: "#services", start: "top 80%" },
-        y: 40, opacity: 0, duration: 0.8
-      });
-      gsap.from(".service-card", {
-        scrollTrigger: { trigger: "#services", start: "top 70%" },
-        y: 60, opacity: 0, stagger: 0.15, duration: 0.8
+      // Services - IMMEDIATE visibility with enhanced entrance
+      // Set initial state via CSS, only animate enhancement
+      gsap.set(".services-header", { opacity: 1, y: 0 });
+      gsap.set(".service-card", { opacity: 1, y: 0 });
+
+      ScrollTrigger.create({
+        trigger: "#services",
+        start: "top 95%",
+        onEnter: () => {
+          gsap.from(".services-header", { y: 25, opacity: 0.3, duration: 0.5, ease: "power2.out" });
+          gsap.from(".service-card", { y: 35, opacity: 0.3, scale: 0.98, stagger: 0.1, duration: 0.5, ease: "power2.out" });
+        },
+        once: true
       });
 
-      // Stats
-      gsap.from(".stat-item", {
-        scrollTrigger: { trigger: "#metrics", start: "top 75%" },
-        y: 40, opacity: 0, stagger: 0.1, duration: 0.6
+      // Stats - animate in but start almost visible
+      gsap.set(".stat-item", { opacity: 1, y: 0 });
+      ScrollTrigger.create({
+        trigger: "#metrics",
+        start: "top 95%",
+        onEnter: () => {
+          gsap.from(".stat-item", { y: 25, opacity: 0.3, scale: 0.95, stagger: 0.08, duration: 0.4, ease: "power2.out" });
+        },
+        once: true
       });
 
-      // About
-      gsap.from(".about-content", {
-        scrollTrigger: { trigger: "#about", start: "top 75%" },
-        x: -40, opacity: 0, duration: 0.8
+      // About - slide in effect
+      gsap.set(".about-content", { opacity: 1, x: 0 });
+      gsap.set(".about-image", { opacity: 1, x: 0 });
+      ScrollTrigger.create({
+        trigger: "#about",
+        start: "top 95%",
+        onEnter: () => {
+          gsap.from(".about-content", { x: -25, opacity: 0.3, duration: 0.6, ease: "power2.out" });
+          gsap.from(".about-image", { x: 25, opacity: 0.3, duration: 0.6, ease: "power2.out" });
+        },
+        once: true
       });
-      gsap.from(".about-image", {
-        scrollTrigger: { trigger: "#about", start: "top 75%" },
-        x: 40, opacity: 0, duration: 0.8
+
+      // CTA Section parallax
+      gsap.to("#cta-content", {
+        scrollTrigger: { trigger: "#cta-section", start: "top bottom", end: "bottom top", scrub: 1 },
+        y: -20
+      });
+
+      // Dynamic card hover effects with GSAP
+      document.querySelectorAll('.service-card').forEach((card) => {
+        const cardEl = card as HTMLElement;
+        cardEl.addEventListener('mouseenter', () => {
+          gsap.to(cardEl, { scale: 1.02, duration: 0.3, ease: "power2.out" });
+          gsap.to(cardEl.querySelector('.card-glow'), { opacity: 1, duration: 0.3 });
+        });
+        cardEl.addEventListener('mouseleave', () => {
+          gsap.to(cardEl, { scale: 1, duration: 0.3, ease: "power2.out" });
+          gsap.to(cardEl.querySelector('.card-glow'), { opacity: 0, duration: 0.3 });
+        });
+      });
+
+      // Stat counter animation when in view
+      ScrollTrigger.create({
+        trigger: "#metrics",
+        start: "top 80%",
+        onEnter: () => {
+          document.querySelectorAll('.stat-value').forEach((el) => {
+            const target = parseInt(el.getAttribute('data-value') || '0');
+            const suffix = el.getAttribute('data-suffix') || '';
+            gsap.to({ val: 0 }, {
+              val: target,
+              duration: 1.5,
+              ease: "power2.out",
+              onUpdate: function() {
+                (el as HTMLElement).textContent = Math.round(this.targets()[0].val) + suffix;
+              }
+            });
+          });
+        },
+        once: true
       });
 
     }, mainRef);
