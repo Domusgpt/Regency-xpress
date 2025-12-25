@@ -105,7 +105,7 @@ const Icons = {
 };
 
 // ============================================================================
-// LOGO COMPONENT - Uses actual PNG logo
+// LOGO COMPONENT - Uses PNG logo with "SERVICES" replacing "LOGISTICS"
 // ============================================================================
 type LogoSize = "small" | "default" | "large" | "hero";
 
@@ -123,13 +123,45 @@ const RegencyLogo = ({
     hero: "w-72 md:w-96 lg:w-[28rem]"
   };
 
+  // Font sizes calibrated to match original "LOGISTICS" text proportions
+  const textStyles: Record<LogoSize, { fontSize: string; letterSpacing: string }> = {
+    small: { fontSize: '5.5px', letterSpacing: '0.22em' },
+    default: { fontSize: '7px', letterSpacing: '0.22em' },
+    large: { fontSize: '9.5px', letterSpacing: '0.22em' },
+    hero: { fontSize: '13px', letterSpacing: '0.22em' }
+  };
+
   return (
     <div className={`${sizeClasses[size]} ${className}`}>
-      <img
-        src={LOGO_URL}
-        alt="Regency Xpress Logistics"
-        className="w-full h-auto object-contain drop-shadow-lg"
-      />
+      <div className="relative w-full">
+        {/* PNG Logo - cropped to hide original "LOGISTICS" text at bottom */}
+        <img
+          src={LOGO_URL}
+          alt="Regency Xpress Services"
+          className="w-full h-auto object-contain drop-shadow-lg"
+          style={{
+            clipPath: 'inset(0 0 11% 0)'
+          }}
+        />
+        {/* "SERVICES" text positioned to match original typography */}
+        <div
+          className="absolute left-0 right-0 flex justify-center"
+          style={{ bottom: '0%' }}
+        >
+          <span
+            style={{
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              fontWeight: 400,
+              fontSize: textStyles[size].fontSize,
+              letterSpacing: textStyles[size].letterSpacing,
+              color: '#CFB53B',
+              textTransform: 'uppercase',
+            }}
+          >
+            Services
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
