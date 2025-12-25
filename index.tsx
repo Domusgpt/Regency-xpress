@@ -405,6 +405,253 @@ const MarqueeSection = () => (
 );
 
 // ============================================================================
+// MORPHING EXPERIENCE SECTION - 800vh Scroll-Locked Transformation
+// ============================================================================
+const morphingStates = [
+  {
+    id: 1,
+    question: "From Runway to Recovery",
+    subtext: "Airport to patient. No delays. No excuses.",
+    bgColor: "from-regencyNavy via-regencyDark to-regencyNavy",
+  },
+  {
+    id: 2,
+    pillars: [
+      { title: "Direct Routes", desc: "Airport pickup to final mile" },
+      { title: "Chain of Custody", desc: "Documented every step" },
+      { title: "Temperature Control", desc: "Maintained in transit" },
+      { title: "Priority Handling", desc: "Medical cargo first" },
+    ],
+    bgColor: "from-regencyDark via-regencyNavy to-regencyDark",
+  },
+  {
+    id: 3,
+    philosophy: "When it lands, we're already there.",
+    author: "The Regency Promise",
+    bgColor: "from-regencyNavy via-regencyBlue/20 to-regencyNavy",
+  },
+  {
+    id: 4,
+    features: [
+      { icon: "✈️", label: "Airport Coordination", desc: "Tarmac-ready teams" },
+      { icon: "🏥", label: "Hospital Delivery", desc: "Direct to facility" },
+      { icon: "📍", label: "Live Tracking", desc: "Real-time visibility" },
+      { icon: "📋", label: "Compliance", desc: "Full documentation" },
+    ],
+    bgColor: "from-regencyDark via-regencyNavy to-regencyDark",
+  },
+  {
+    id: 5,
+    cta: true,
+    headline: "Your cargo. Our priority.",
+    bgColor: "from-regencyNavy via-regencyBlue/30 to-regencyNavy",
+  },
+];
+
+const MorphingSection = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [activeState, setActiveState] = useState(1);
+
+  useLayoutEffect(() => {
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Create scroll trigger for the entire section
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        pin: ".morphing-viewport",
+        pinSpacing: false,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          const newState = Math.min(5, Math.floor(progress * 5) + 1);
+          setActiveState(newState);
+        },
+      });
+
+      // Animate state transitions
+      for (let i = 1; i <= 5; i++) {
+        const startProgress = (i - 1) / 5;
+        const endProgress = i / 5;
+
+        ScrollTrigger.create({
+          trigger: sectionRef.current,
+          start: `${startProgress * 100}% top`,
+          end: `${endProgress * 100}% top`,
+          onEnter: () => {
+            gsap.to(`.morph-state-${i}`, {
+              opacity: 1,
+              scale: 1,
+              duration: 0.6,
+              ease: "power2.out",
+            });
+          },
+          onLeave: () => {
+            gsap.to(`.morph-state-${i}`, {
+              opacity: 0,
+              scale: 0.95,
+              duration: 0.4,
+            });
+          },
+          onEnterBack: () => {
+            gsap.to(`.morph-state-${i}`, {
+              opacity: 1,
+              scale: 1,
+              duration: 0.6,
+            });
+          },
+          onLeaveBack: () => {
+            gsap.to(`.morph-state-${i}`, {
+              opacity: 0,
+              scale: 0.95,
+              duration: 0.4,
+            });
+          },
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={sectionRef} id="morphing-section" className="relative" style={{ height: "800vh" }}>
+      {/* Fixed viewport */}
+      <div className="morphing-viewport h-screen w-full overflow-hidden sticky top-0">
+        {/* Background transitions */}
+        <div className={`absolute inset-0 bg-gradient-to-b ${morphingStates[activeState - 1]?.bgColor || morphingStates[0].bgColor} transition-all duration-1000`} />
+
+        {/* Animated orbs */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div
+            className="absolute w-96 h-96 rounded-full blur-[150px] transition-all duration-1000"
+            style={{
+              background: activeState % 2 === 0 ? "rgba(207,181,59,0.15)" : "rgba(43,80,145,0.2)",
+              top: `${20 + activeState * 10}%`,
+              left: `${10 + activeState * 5}%`,
+            }}
+          />
+          <div
+            className="absolute w-72 h-72 rounded-full blur-[120px] transition-all duration-1000"
+            style={{
+              background: activeState % 2 === 0 ? "rgba(43,80,145,0.2)" : "rgba(207,181,59,0.15)",
+              bottom: `${20 + activeState * 5}%`,
+              right: `${10 + activeState * 8}%`,
+            }}
+          />
+        </div>
+
+        {/* Progress indicator */}
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
+          {[1, 2, 3, 4, 5].map((state) => (
+            <div
+              key={state}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                activeState >= state ? "bg-regencyGold scale-125" : "bg-white/30"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* State 1: Question */}
+        <div className={`morph-state-1 absolute inset-0 flex items-center justify-center transition-all duration-500 ${activeState === 1 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+          <div className="text-center max-w-4xl px-6">
+            <div className="w-32 h-32 mx-auto mb-8 rounded-full bg-regencyGold/20 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-regencyGold/30 animate-pulse flex items-center justify-center">
+                <span className="text-4xl">?</span>
+              </div>
+            </div>
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6">
+              {morphingStates[0].question}
+            </h2>
+            <p className="text-xl md:text-2xl text-white/50">{morphingStates[0].subtext}</p>
+          </div>
+        </div>
+
+        {/* State 2: Four Pillars */}
+        <div className={`morph-state-2 absolute inset-0 flex items-center justify-center transition-all duration-500 ${activeState === 2 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {morphingStates[1].pillars?.map((pillar, i) => (
+                <div
+                  key={i}
+                  className="group p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:border-regencyGold/50 transition-all duration-500 hover:scale-105"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
+                  <div className="w-16 h-16 mb-6 rounded-xl bg-regencyGold/20 flex items-center justify-center">
+                    <span className="text-2xl font-bold text-regencyGold">{i + 1}</span>
+                  </div>
+                  <h3 className="text-2xl font-display font-bold text-white mb-2 group-hover:text-regencyGold transition-colors">
+                    {pillar.title}
+                  </h3>
+                  <p className="text-white/50 text-sm">{pillar.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* State 3: Philosophy */}
+        <div className={`morph-state-3 absolute inset-0 flex items-center justify-center transition-all duration-500 ${activeState === 3 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+          <div className="text-center max-w-4xl px-6">
+            <div className="relative">
+              <span className="absolute -top-16 -left-8 text-[200px] font-display text-regencyGold/10 select-none">"</span>
+              <p className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-tight relative z-10">
+                {morphingStates[2].philosophy}
+              </p>
+              <span className="absolute -bottom-24 -right-8 text-[200px] font-display text-regencyGold/10 select-none rotate-180">"</span>
+            </div>
+            <p className="mt-12 text-regencyGold text-lg tracking-widest uppercase">— {morphingStates[2].author}</p>
+          </div>
+        </div>
+
+        {/* State 4: Airport to Patient Features */}
+        <div className={`morph-state-4 absolute inset-0 flex items-center justify-center transition-all duration-500 ${activeState === 4 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+          <div className="max-w-5xl mx-auto px-6">
+            <h3 className="text-center text-sm text-regencyGold tracking-[0.3em] uppercase mb-12">The Full Journey</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {morphingStates[3].features?.map((item, i) => (
+                <div
+                  key={i}
+                  className="group text-center p-6 rounded-2xl bg-gradient-to-b from-white/10 to-white/5 border border-white/10 hover:border-regencyGold/30 transition-all duration-300 hover:scale-105"
+                >
+                  <div className="text-4xl mb-4">{item.icon}</div>
+                  <div className="text-lg font-display font-bold text-white mb-1 group-hover:text-regencyGold transition-colors">{item.label}</div>
+                  <div className="text-white/50 text-sm">{item.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* State 5: CTA Transition */}
+        <div className={`morph-state-5 absolute inset-0 flex items-center justify-center transition-all duration-500 ${activeState === 5 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+          <div className="text-center max-w-3xl px-6">
+            <RegencyLogo size="large" className="mx-auto mb-8" />
+            <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-6">
+              {morphingStates[4].headline}
+            </h2>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+              <button className="group px-8 py-4 bg-regencyGold text-regencyNavy font-bold text-sm uppercase tracking-wider rounded-lg hover:shadow-xl hover:shadow-regencyGold/40 transition-all flex items-center justify-center gap-3">
+                Get Started
+                <Icons.ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll hint */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center">
+          <span className="text-white/30 text-xs uppercase tracking-widest">Keep scrolling</span>
+          <div className="mt-2 w-px h-8 bg-gradient-to-b from-white/30 to-transparent mx-auto" />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ============================================================================
 // SERVICES SECTION
 // ============================================================================
 const services = [
@@ -795,100 +1042,272 @@ const App = () => {
     if (loading || !mainRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Hero Intro Animation - quick and snappy
+      // ========== HERO INTRO - Choreographed entrance ==========
       const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
       heroTl
-        .from("#hero-logo", { y: 30, opacity: 0, scale: 0.95, duration: 0.8 })
-        .from("#hero-tagline > *", { y: 20, opacity: 0, stagger: 0.08, duration: 0.6 }, "-=0.4")
-        .from("#hero-cta > *", { y: 15, opacity: 0, stagger: 0.08, duration: 0.5 }, "-=0.3")
-        .from("#hero-stats > *", { y: 15, opacity: 0, stagger: 0.04, duration: 0.4 }, "-=0.2")
-        .from("#scroll-indicator", { opacity: 0, duration: 0.4 }, "-=0.1");
+        .from("#hero-logo", {
+          y: 60,
+          opacity: 0,
+          scale: 0.8,
+          duration: 1.2,
+          ease: "elastic.out(1, 0.8)"
+        })
+        .from("#hero-tagline p:first-child", {
+          y: 30,
+          opacity: 0,
+          duration: 0.6
+        }, "-=0.6")
+        .from("#hero-tagline h1", {
+          y: 40,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power4.out"
+        }, "-=0.4")
+        .from("#hero-tagline p:last-child", {
+          y: 20,
+          opacity: 0,
+          duration: 0.5
+        }, "-=0.4")
+        .from("#hero-cta > *", {
+          y: 30,
+          opacity: 0,
+          stagger: 0.12,
+          duration: 0.6,
+          ease: "back.out(1.7)"
+        }, "-=0.3")
+        .from("#hero-stats > *", {
+          y: 20,
+          opacity: 0,
+          stagger: 0.06,
+          duration: 0.4
+        }, "-=0.2")
+        .from("#scroll-indicator", {
+          opacity: 0,
+          y: 20,
+          duration: 0.5
+        }, "-=0.1");
 
-      // Hero Parallax on Scroll - smoother
+      // ========== HERO PARALLAX - Multi-layer depth ==========
       gsap.timeline({
         scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1.5 }
       })
-        .to("#hero-logo", { y: -60, scale: 0.97 })
-        .to("#hero-tagline", { y: -30 }, "<")
-        .to("#hero-cta", { y: -15 }, "<0.05");
+        .to("#hero-logo", { y: -100, scale: 0.9, ease: "none" })
+        .to("#hero-tagline", { y: -60, ease: "none" }, "<")
+        .to("#hero-cta", { y: -30, ease: "none" }, "<")
+        .to("#hero-stats", { y: -15, opacity: 0.5, ease: "none" }, "<")
+        .to("#scroll-indicator", { opacity: 0, y: -20 }, "<");
 
-      // Services - IMMEDIATE visibility with enhanced entrance
-      // Set initial state via CSS, only animate enhancement
-      gsap.set(".services-header", { opacity: 1, y: 0 });
-      gsap.set(".service-card", { opacity: 1, y: 0 });
+      // ========== SERVICES - Staggered card reveal ==========
+      gsap.set(".services-header", { opacity: 1 });
+      gsap.set(".service-card", { opacity: 1 });
 
+      // Header entrance with text split effect
       ScrollTrigger.create({
         trigger: "#services",
-        start: "top 95%",
+        start: "top 90%",
         onEnter: () => {
-          gsap.from(".services-header", { y: 25, opacity: 0.3, duration: 0.5, ease: "power2.out" });
-          gsap.from(".service-card", { y: 35, opacity: 0.3, scale: 0.98, stagger: 0.1, duration: 0.5, ease: "power2.out" });
-        },
-        once: true
-      });
-
-      // Stats - animate in but start almost visible
-      gsap.set(".stat-item", { opacity: 1, y: 0 });
-      ScrollTrigger.create({
-        trigger: "#metrics",
-        start: "top 95%",
-        onEnter: () => {
-          gsap.from(".stat-item", { y: 25, opacity: 0.3, scale: 0.95, stagger: 0.08, duration: 0.4, ease: "power2.out" });
-        },
-        once: true
-      });
-
-      // About - slide in effect
-      gsap.set(".about-content", { opacity: 1, x: 0 });
-      gsap.set(".about-image", { opacity: 1, x: 0 });
-      ScrollTrigger.create({
-        trigger: "#about",
-        start: "top 95%",
-        onEnter: () => {
-          gsap.from(".about-content", { x: -25, opacity: 0.3, duration: 0.6, ease: "power2.out" });
-          gsap.from(".about-image", { x: 25, opacity: 0.3, duration: 0.6, ease: "power2.out" });
-        },
-        once: true
-      });
-
-      // CTA Section parallax
-      gsap.to("#cta-content", {
-        scrollTrigger: { trigger: "#cta-section", start: "top bottom", end: "bottom top", scrub: 1 },
-        y: -20
-      });
-
-      // Dynamic card hover effects with GSAP
-      document.querySelectorAll('.service-card').forEach((card) => {
-        const cardEl = card as HTMLElement;
-        cardEl.addEventListener('mouseenter', () => {
-          gsap.to(cardEl, { scale: 1.02, duration: 0.3, ease: "power2.out" });
-          gsap.to(cardEl.querySelector('.card-glow'), { opacity: 1, duration: 0.3 });
-        });
-        cardEl.addEventListener('mouseleave', () => {
-          gsap.to(cardEl, { scale: 1, duration: 0.3, ease: "power2.out" });
-          gsap.to(cardEl.querySelector('.card-glow'), { opacity: 0, duration: 0.3 });
-        });
-      });
-
-      // Stat counter animation when in view
-      ScrollTrigger.create({
-        trigger: "#metrics",
-        start: "top 80%",
-        onEnter: () => {
-          document.querySelectorAll('.stat-value').forEach((el) => {
-            const target = parseInt(el.getAttribute('data-value') || '0');
-            const suffix = el.getAttribute('data-suffix') || '';
-            gsap.to({ val: 0 }, {
-              val: target,
-              duration: 1.5,
-              ease: "power2.out",
-              onUpdate: function() {
-                (el as HTMLElement).textContent = Math.round(this.targets()[0].val) + suffix;
-              }
-            });
+          gsap.from(".services-header span", {
+            y: -20,
+            opacity: 0,
+            duration: 0.5,
+            ease: "power2.out"
+          });
+          gsap.from(".services-header h2", {
+            y: 40,
+            opacity: 0,
+            duration: 0.7,
+            ease: "power3.out",
+            delay: 0.1
+          });
+          gsap.from(".services-header p", {
+            y: 20,
+            opacity: 0,
+            duration: 0.5,
+            delay: 0.2
           });
         },
         once: true
+      });
+
+      // Cards with staggered 3D entrance
+      ScrollTrigger.create({
+        trigger: "#services .grid",
+        start: "top 85%",
+        onEnter: () => {
+          gsap.from(".service-card", {
+            y: 60,
+            opacity: 0,
+            scale: 0.95,
+            rotationX: 10,
+            stagger: {
+              each: 0.15,
+              from: "start"
+            },
+            duration: 0.7,
+            ease: "power3.out"
+          });
+        },
+        once: true
+      });
+
+      // ========== STATS - Counter animation with entrance ==========
+      gsap.set(".stat-item", { opacity: 1 });
+
+      ScrollTrigger.create({
+        trigger: "#metrics",
+        start: "top 85%",
+        onEnter: () => {
+          // Entrance animation
+          gsap.from(".stat-item", {
+            y: 40,
+            opacity: 0,
+            scale: 0.9,
+            stagger: 0.1,
+            duration: 0.6,
+            ease: "back.out(1.4)"
+          });
+
+          // Counter animation
+          document.querySelectorAll('.stat-value').forEach((el) => {
+            const target = parseInt(el.getAttribute('data-value') || '0');
+            gsap.fromTo({ val: 0 },
+              { val: 0 },
+              {
+                val: target,
+                duration: 2,
+                delay: 0.3,
+                ease: "power2.out",
+                onUpdate: function() {
+                  (el as HTMLElement).textContent = String(Math.round(this.targets()[0].val));
+                }
+              }
+            );
+          });
+        },
+        once: true
+      });
+
+      // ========== ABOUT - Split screen reveal ==========
+      gsap.set(".about-content", { opacity: 1 });
+      gsap.set(".about-image", { opacity: 1 });
+
+      ScrollTrigger.create({
+        trigger: "#about",
+        start: "top 80%",
+        onEnter: () => {
+          gsap.from(".about-content", {
+            x: -60,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power3.out"
+          });
+          gsap.from(".about-content > *", {
+            y: 30,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 0.5,
+            delay: 0.2,
+            ease: "power2.out"
+          });
+          gsap.from(".about-image", {
+            x: 60,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power3.out"
+          });
+          gsap.from(".about-image > div:last-child", {
+            y: 40,
+            opacity: 0,
+            duration: 0.6,
+            delay: 0.4
+          });
+        },
+        once: true
+      });
+
+      // ========== CTA - Scrubbed parallax ==========
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: "#cta-section",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1
+        }
+      })
+        .from("#cta-content", { y: 60, ease: "none" })
+        .to("#cta-content", { y: -40, ease: "none" });
+
+      // ========== FOOTER - Staggered links ==========
+      ScrollTrigger.create({
+        trigger: "#contact",
+        start: "top 90%",
+        onEnter: () => {
+          gsap.from("#contact > div > div", {
+            y: 30,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 0.5
+          });
+        },
+        once: true
+      });
+
+      // ========== INTERACTIVE CARD EFFECTS ==========
+      document.querySelectorAll('.service-card').forEach((card) => {
+        const cardEl = card as HTMLElement;
+
+        cardEl.addEventListener('mouseenter', () => {
+          gsap.to(cardEl, {
+            scale: 1.03,
+            duration: 0.4,
+            ease: "power2.out",
+            boxShadow: "0 20px 40px rgba(207,181,59,0.15)"
+          });
+          gsap.to(cardEl.querySelector('.card-glow'), {
+            opacity: 1,
+            duration: 0.3
+          });
+        });
+
+        cardEl.addEventListener('mouseleave', () => {
+          gsap.to(cardEl, {
+            scale: 1,
+            duration: 0.4,
+            ease: "power2.out",
+            boxShadow: "none"
+          });
+          gsap.to(cardEl.querySelector('.card-glow'), {
+            opacity: 0,
+            duration: 0.3
+          });
+        });
+      });
+
+      // ========== MAGNETIC BUTTON EFFECT ==========
+      document.querySelectorAll('button, .magnetic-btn').forEach((btn) => {
+        const btnEl = btn as HTMLElement;
+
+        btnEl.addEventListener('mousemove', (e: MouseEvent) => {
+          const rect = btnEl.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+
+          gsap.to(btnEl, {
+            x: x * 0.2,
+            y: y * 0.2,
+            duration: 0.3,
+            ease: "power2.out"
+          });
+        });
+
+        btnEl.addEventListener('mouseleave', () => {
+          gsap.to(btnEl, {
+            x: 0,
+            y: 0,
+            duration: 0.5,
+            ease: "elastic.out(1, 0.5)"
+          });
+        });
       });
 
     }, mainRef);
@@ -904,6 +1323,7 @@ const App = () => {
       <main>
         <HeroSection />
         <MarqueeSection />
+        <MorphingSection />
         <ServicesSection />
         <StatsSection />
         <AboutSection />
