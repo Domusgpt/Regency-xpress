@@ -201,26 +201,17 @@ const AnimatedBullLogo = ({ className = "", animate = false, showText = true }: 
 );
 
 // ============================================================================
-// LOGO COMPONENT - Prioritizes SVG for crisp rendering
+// LOGO COMPONENT - Uses actual PNG logo
 // ============================================================================
 type LogoSize = "small" | "default" | "large" | "hero";
-type LogoMode = "svg" | "image" | "auto";
 
 const RegencyLogo = ({
   className = "",
   size = "default",
-  mode = "auto",
-  showText = true,
-  animate = false
 }: {
   className?: string;
   size?: LogoSize;
-  mode?: LogoMode;
-  showText?: boolean;
-  animate?: boolean;
 }) => {
-  const [imageError, setImageError] = useState(false);
-
   const sizeClasses: Record<LogoSize, string> = {
     small: "w-28 md:w-32",
     default: "w-44 md:w-52",
@@ -228,24 +219,12 @@ const RegencyLogo = ({
     hero: "w-72 md:w-96 lg:w-[28rem]"
   };
 
-  // Use SVG for hero and large sizes for crisp rendering, or if mode is 'svg'
-  const useSvg = mode === "svg" || (mode === "auto" && (size === "hero" || size === "large" || imageError));
-
-  if (useSvg) {
-    return (
-      <div className={`${sizeClasses[size]} ${className}`}>
-        <AnimatedBullLogo className="w-full h-auto" showText={showText} animate={animate} />
-      </div>
-    );
-  }
-
   return (
     <div className={`${sizeClasses[size]} ${className}`}>
       <img
         src={LOGO_URL}
         alt="Regency Xpress Logistics"
         className="w-full h-auto object-contain drop-shadow-lg"
-        onError={() => setImageError(true)}
       />
     </div>
   );
@@ -347,8 +326,8 @@ const HeroSection = () => (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="w-48 h-48 md:w-56 md:h-56 bg-regencyBlue/30 rounded-full blur-[60px] animate-float" />
         </div>
-        {/* SVG Logo - crisp at any size */}
-        <RegencyLogo size="hero" mode="svg" showText={true} className="relative mx-auto" />
+        {/* PNG Logo - exact brand logo */}
+        <RegencyLogo size="hero" className="relative mx-auto" />
       </div>
 
       {/* Tagline */}
@@ -763,8 +742,12 @@ const LoadingScreen = ({ progress }: { progress: number }) => (
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="w-48 h-48 bg-regencyGold/25 rounded-full blur-[60px] animate-pulse" />
       </div>
-      <div className="relative">
-        <AnimatedBullLogo className="w-56 md:w-72 h-auto" showText={true} animate={true} />
+      <div className="relative w-56 md:w-72">
+        <img
+          src={LOGO_URL}
+          alt="Regency Xpress Logistics"
+          className="w-full h-auto object-contain drop-shadow-lg animate-pulse"
+        />
       </div>
     </div>
 
