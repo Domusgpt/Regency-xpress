@@ -162,7 +162,7 @@ const App = () => {
         scrollTrigger: {
           trigger: "#hero-section",
           start: "top top",
-          end: "+=150%",
+          end: "+=120%",
           pin: true,
           scrub: 1,
         }
@@ -171,9 +171,8 @@ const App = () => {
       heroTl
         .fromTo("#hero-grid", { opacity: 0, scale: 0.96 }, { opacity: 0.45, scale: 1, duration: 1 })
         .fromTo("#hero-lights", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1 }, "<")
-        .to("#hero-logo", { y: -40, opacity: 0.5, duration: 1 }, "<")
-        .fromTo("#hero-headline", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9 }, "-=0.3")
-        .fromTo("#hero-cards .hero-card", { y: 30, opacity: 0, scale: 0.98 }, { y: 0, opacity: 1, scale: 1, stagger: 0.1, duration: 0.8 });
+        .fromTo("#hero-headline", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, "-=0.5")
+        .fromTo("#hero-cards .hero-card", { y: 30, opacity: 0, scale: 0.98 }, { y: 0, opacity: 1, scale: 1, stagger: 0.12, duration: 0.8 });
 
       const cards = gsap.utils.toArray<HTMLElement>(".module-card");
       gsap.from(cards, {
@@ -243,24 +242,7 @@ const App = () => {
 
   return (
     <div ref={mainRef} className="bg-white min-h-screen text-regencyDarkBlue selection:bg-regencyGold selection:text-white">
-      <nav className="fixed top-0 left-0 w-full z-40 px-6 py-4 flex justify-between items-center bg-white/70 backdrop-blur-xl border-b border-white/30 transition-all duration-300">
-        <a href="#hero-section" className="flex items-center gap-3 cursor-pointer group">
-          <div className="h-10 w-36 md:w-44">
-            <RegencyLogo className="h-full w-full" />
-          </div>
-        </a>
-        <div className="hidden md:flex gap-8 text-[11px] font-bold tracking-[0.26em] uppercase text-gray-500">
-          <a href="#services-section" className="hover:text-regencyBlue transition-colors">Solutions</a>
-          <a href="#flow-section" className="hover:text-regencyBlue transition-colors">Flow</a>
-          <a href="#codex-section" className="hover:text-regencyBlue transition-colors">Style Codex</a>
-          <a href="#about-section" className="hover:text-regencyBlue transition-colors">Mission</a>
-        </div>
-        <button className="px-5 py-2 bg-regencyDarkBlue text-white text-[11px] font-bold uppercase tracking-[0.26em] hover:bg-regencyBlue transition-all rounded-full shadow-lg shadow-regencyBlue/10">
-          Portal Login
-        </button>
-      </nav>
-
-      <section id="hero-section" className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center pt-20">
+      <section id="hero-section" className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
         <div id="hero-grid" className="absolute inset-0 bg-grid-pattern bg-[length:36px_36px] opacity-[0.06]"></div>
         <div id="hero-lights" className="absolute inset-0">
           <div className="absolute -top-24 left-0 w-96 h-96 bg-regencyBlue/20 rounded-full blur-[140px]"></div>
@@ -268,41 +250,28 @@ const App = () => {
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[520px] h-[520px] bg-gradient-to-br from-white via-regencyOffWhite to-regencyBlue/10 opacity-60 rounded-full blur-[200px]"></div>
         </div>
 
-        <div className="relative z-10 w-full max-w-6xl px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10 w-full max-w-5xl px-6 flex flex-col items-center text-center">
           <div className="space-y-8" id="hero-headline">
-            <div className="inline-flex items-center gap-3 px-3 py-1 bg-white/60 backdrop-blur rounded-full border border-white/50 text-[10px] font-bold uppercase tracking-[0.38em] text-gray-600 shadow-sm">
+            <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-white/60 backdrop-blur rounded-full border border-white/50 text-[10px] font-semibold uppercase tracking-[0.35em] text-gray-600 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
               Precision Medical Freight
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight text-regencyDarkBlue drop-shadow-sm">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-[1.1] text-regencyDarkBlue drop-shadow-sm max-w-4xl mx-auto">
               A multi-layered dispatch system tuned for <span className="text-regencyBlue">clinical certainty</span> and <span className="text-regencyGold">human calm</span>.
             </h1>
-            <p className="text-base md:text-lg text-gray-600 max-w-xl leading-relaxed">
+            <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Regency Xpress orchestrates every mile with telemetry, design, and disciplined crews—so hospital command centers see proof, not promises.
             </p>
-            <div className="flex flex-wrap gap-3" id="hero-cards">
-              <div className="hero-card px-5 py-3 bg-white/70 border border-gray-100 rounded-xl shadow-lg shadow-regencyBlue/5 text-sm font-bold uppercase tracking-[0.26em] text-regencyBlue flex items-center gap-2">
+            <div className="flex flex-wrap justify-center gap-3 pt-4" id="hero-cards">
+              <div className="hero-card px-5 py-3 bg-white/70 border border-gray-100 rounded-full shadow-md shadow-regencyBlue/5 text-[11px] font-semibold uppercase tracking-[0.2em] text-regencyBlue flex items-center gap-2 hover:shadow-lg hover:border-regencyBlue/20 transition-all duration-300">
                 <Icons.Box /> Chain-of-custody
               </div>
-              <div className="hero-card px-5 py-3 bg-white/70 border border-gray-100 rounded-xl shadow-lg shadow-regencyBlue/5 text-sm font-bold uppercase tracking-[0.26em] text-regencyGold flex items-center gap-2">
+              <div className="hero-card px-5 py-3 bg-white/70 border border-gray-100 rounded-full shadow-md shadow-regencyBlue/5 text-[11px] font-semibold uppercase tracking-[0.2em] text-regencyGold flex items-center gap-2 hover:shadow-lg hover:border-regencyGold/20 transition-all duration-300">
                 <Icons.Van /> Thermal fleet
               </div>
-              <div className="hero-card px-5 py-3 bg-white/70 border border-gray-100 rounded-xl shadow-lg shadow-regencyBlue/5 text-sm font-bold uppercase tracking-[0.26em] text-gray-600 flex items-center gap-2">
+              <div className="hero-card px-5 py-3 bg-white/70 border border-gray-100 rounded-full shadow-md shadow-regencyBlue/5 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-600 flex items-center gap-2 hover:shadow-lg transition-all duration-300">
                 <Icons.Timer /> 24/7 crews
               </div>
-            </div>
-          </div>
-
-          <div className="relative flex items-center justify-center">
-            <div id="hero-logo" className="w-full max-w-[540px] h-auto min-h-[260px] flex items-center justify-center rounded-2xl bg-white/60 backdrop-blur-xl border border-white/60 shadow-[0_20px_80px_-30px_rgba(37,80,145,0.4)] relative overflow-hidden">
-              <div className="absolute inset-0 opacity-60 bg-gradient-to-br from-regencyBlue/10 via-white to-regencyGold/15"></div>
-              <div className="absolute top-4 right-4 px-3 py-1 text-[10px] uppercase tracking-[0.3em] font-bold text-regencyBlue bg-white/70 border border-white/60 rounded-full flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                Live Dispatch
-              </div>
-              <div className="relative z-10 w-60 h-40 md:w-72 md:h-48">
-                <RegencyLogo className="w-full h-full" />
-              </div>
-              <div className="absolute -bottom-10 -left-8 w-64 h-64 bg-gradient-to-tr from-regencyBlue/20 to-transparent blur-3xl"></div>
             </div>
           </div>
         </div>
