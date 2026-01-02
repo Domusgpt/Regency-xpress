@@ -242,26 +242,7 @@ const App = () => {
 
   return (
     <div ref={mainRef} className="bg-white min-h-screen text-regencyDarkBlue selection:bg-regencyGold selection:text-white">
-      <nav className="fixed top-0 left-0 w-full z-40 transition-all duration-500">
-        <div className="mx-4 md:mx-8 mt-4 px-6 py-3 flex justify-between items-center bg-white/50 backdrop-blur-2xl rounded-full border border-gray-200/40 shadow-[0_4px_30px_-10px_rgba(37,80,145,0.12)]">
-          <a href="#hero-section" className="flex items-center gap-2 cursor-pointer group">
-            <div className="h-8 w-28 md:w-32 opacity-90 group-hover:opacity-100 transition-opacity">
-              <RegencyLogo className="h-full w-full" />
-            </div>
-          </a>
-          <div className="hidden md:flex items-center gap-1">
-            <a href="#services-section" className="px-4 py-2 text-[11px] font-medium tracking-[0.12em] uppercase text-gray-500 hover:text-regencyBlue hover:bg-regencyBlue/5 rounded-full transition-all duration-300">Solutions</a>
-            <a href="#flow-section" className="px-4 py-2 text-[11px] font-medium tracking-[0.12em] uppercase text-gray-500 hover:text-regencyBlue hover:bg-regencyBlue/5 rounded-full transition-all duration-300">Flow</a>
-            <a href="#codex-section" className="px-4 py-2 text-[11px] font-medium tracking-[0.12em] uppercase text-gray-500 hover:text-regencyBlue hover:bg-regencyBlue/5 rounded-full transition-all duration-300">Codex</a>
-            <a href="#about-section" className="px-4 py-2 text-[11px] font-medium tracking-[0.12em] uppercase text-gray-500 hover:text-regencyBlue hover:bg-regencyBlue/5 rounded-full transition-all duration-300">Mission</a>
-          </div>
-          <button className="px-5 py-2 bg-regencyDarkBlue/90 text-white text-[10px] font-semibold uppercase tracking-[0.15em] hover:bg-regencyBlue transition-all duration-300 rounded-full shadow-sm hover:shadow-lg hover:shadow-regencyBlue/20">
-            Portal
-          </button>
-        </div>
-      </nav>
-
-      <section id="hero-section" className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center pt-20">
+      <section id="hero-section" className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
         <div id="hero-grid" className="absolute inset-0 bg-grid-pattern bg-[length:36px_36px] opacity-[0.06]"></div>
         <div id="hero-lights" className="absolute inset-0">
           <div className="absolute -top-24 left-0 w-96 h-96 bg-regencyBlue/20 rounded-full blur-[140px]"></div>
